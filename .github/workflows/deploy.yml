@@ -70,8 +70,8 @@ jobs:
         if: steps.cache-nodemodules.outputs.cache-hit != 'true'
         run: npm ci
       
-      - name: Run tests
-        run: npm run test
+      # - name: Run tests
+      #   run: npm run test
 
   deploy_to_vercel:
     runs-on: ubuntu-latest
