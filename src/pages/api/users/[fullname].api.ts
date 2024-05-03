@@ -9,15 +9,15 @@ export default async function handler(
     return response.status(405).end()
   }
 
-  const username = String(request.query.username)
+  const fullname = String(request.query.fullname)
 
-  if (!username) {
+  if (!fullname) {
     return response.status(400).json({ message: 'Resource not found.' })
   }
 
   const user = await prisma.user.findUnique({
     where: {
-      username,
+      fullname,
     },
   })
 

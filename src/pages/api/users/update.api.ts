@@ -2,11 +2,11 @@ import { prisma } from '@/lib/prisma'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
 
-const registerBodySchema = z.object({
+const updateBodySchema = z.object({
+  id: z.string(),
   fullname: z
     .string()
     .transform((name) => name.toLowerCase().replace(/\//g, '')),
-  // username: z.string().regex(/^([a-z\d\-]+)$/i),
   jobtitle: z.string(),
   email: z.string().email(),
   linkedin: z
@@ -32,18 +32,19 @@ export default async function handler(
   request: NextApiRequest,
   response: NextApiResponse,
 ) {
-  if (request.method !== 'POST') {
+  if (request.method !== 'PUT') {
     return response.status(405).end()
   }
 
-  const registerBody = registerBodySchema.safeParse(request.body)
+  const updateBody = updateBodySchema.safeParse(request.body)
 
-  if (registerBody.success === false) {
-    return response.status(409).json(registerBody.error.format())
+  if (updateBody.success === false) {
+    return response.status(409).json(updateBody.error.format())
   }
 
   const {
     data: {
+      id,
       fullname,
       email,
       jobtitle,
@@ -55,19 +56,22 @@ export default async function handler(
       cardBackgroundColor,
       cardTextColor,
     },
-  } = registerBody
+  } = updateBody
 
   const userExists = await prisma.user.findUnique({
     where: {
-      fullname,
+      id,
     },
   })
 
-  if (userExists) {
-    return response.status(409).json({ message: 'User already exists.' })
+  if (!userExists) {
+    return response.status(404).json({ message: 'User not found.' })
   }
 
-  const user = await prisma.user.create({
+  const user = await prisma.user.update({
+    where: {
+      id,
+    },
     data: {
       jobtitle,
       email,
@@ -82,5 +86,5 @@ export default async function handler(
     },
   })
 
-  return response.status(201).json(user)
+  return response.status(200).json(user)
 }

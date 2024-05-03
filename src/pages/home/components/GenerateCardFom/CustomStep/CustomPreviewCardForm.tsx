@@ -1,32 +1,32 @@
-import { useFormContext } from 'react-hook-form'
-import clsx from 'clsx'
+// import { useFormContext } from 'react-hook-form'
+// import clsx from 'clsx'
 
 import { CardPreview } from '@/components/CardPreview'
-import { TextInput } from '@/components/TextInput'
-import { ToggleGroupButton } from '@/components/ToggleGroupButton'
+// import { TextInput } from '@/components/TextInput'
+// import { ToggleGroupButton } from '@/components/ToggleGroupButton'
 
-import { UploadSimple } from 'phosphor-react'
+// import { UploadSimple } from 'phosphor-react'
 
 export function CustomPreviewCardForm() {
-  const {
-    register,
-    watch,
-    control,
-    formState: { errors },
-  } = useFormContext()
+  // const {
+  //   register,
+  //   watch,
+  //   control,
+  //   formState: { errors },
+  // } = useFormContext()
 
-  const backgroundColor: string = watch('backgroundColor')
-  const textColor: string = watch('textColor')
-  const logoImage: string = watch('logoImage')
-  let hasFileOnInput: boolean = false
+  // const backgroundColor: string = watch('backgroundColor')
+  // const textColor: string = watch('textColor')
+  // const logoImage: string = watch('logoImage')
+  // let hasFileOnInput: boolean = false
 
-  if (logoImage) {
-    hasFileOnInput = logoImage.length > 0
-  }
+  // if (logoImage) {
+  //   hasFileOnInput = logoImage.length > 0
+  // }
 
   return (
-    <div className="grid grid-cols-2 gap-4">
-      <div className="flex flex-col gap-4">
+    <div className="grid grid-cols-1 gap-4">
+      {/* <div className="flex flex-col gap-4">
         <label className="flex flex-col gap-2 relative ">
           Logo image
           <TextInput.Root
@@ -83,8 +83,8 @@ export function CustomPreviewCardForm() {
         </label>
 
         <ToggleGroupButton control={control} {...register('textColor')} />
-      </div>
-      <CardPreview cardColor={backgroundColor} textColor={textColor} />
+      </div> */}
+      <CardPreview cardColor={'#232325'} textColor={'#FFFFFF'} />
     </div>
   )
 }

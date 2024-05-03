@@ -29,17 +29,23 @@ const TextInputInput = forwardRef<HTMLInputElement, TextInputProps>(
     return (
       <div
         className={clsx(
-          `focus-within:ring-1 ${className} flex items-baseline bg-zinc-900 h-12 rounded-md px-4 py-3 min-w-full`,
+          `focus-within:ring-1 ${className} flex items-baseline h-12 rounded-md px-4 py-3 min-w-full`,
           {
             'focus-within:ring-red-500': hasError,
             'focus-within:ring-green-600': !hasError,
+          },
+          {
+            'bg-gray-600 cursor-not-allowed': props.disabled,
+            'bg-zinc-900': !props.disabled,
           },
         )}
       >
         {children}
         <input
           ref={ref}
-          className="w-full h-full bg-transparent focus:outline-none placeholder:text-gray-500 "
+          className={`w-full h-full bg-transparent focus:outline-none placeholder:text-gray-500 ${
+            props.disabled ? 'disabled cursor-not-allowed' : ''
+          }`}
           {...props}
         />
       </div>

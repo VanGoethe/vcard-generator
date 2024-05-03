@@ -10,13 +10,14 @@ describe('User page', () => {
   beforeEach(async () => {
     user = {
       id: 'fake-user-id',
-      name: 'john doe',
+      fullname: 'john doe',
+      phoneNumber: '239842',
+      skype: 'http://www.fake-skype.com/johndoe',
+      timezone: 'fake timezone',
       email: 'johndoe@email.com',
-      username: 'john-doe',
       linkedin: 'john-doe',
-      github: 'john-doe',
       image_url: 'http://www.fake-cdn.com/image.png',
-      description: 'fake description',
+      jobtitle: 'fake jobtitle',
       card_background_color: '#000000',
       card_text_color: '#FFFFFF',
       created_at: new Date(),
@@ -26,6 +27,6 @@ describe('User page', () => {
   it('Should be render correctly', () => {
     render(<UserPage user={user} />)
 
-    expect(screen.getByText(`${user.name}`)).toBeInTheDocument()
+    expect(screen.getByText(`${user.fullname}`)).toBeInTheDocument()
   })
 })

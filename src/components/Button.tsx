@@ -29,12 +29,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         className={clsx(
-          `${className} text-sm rounded-md py-4 flex h-12 gap-2 justify-center items-center w-full min-w-[120px] transition-colors outline-none focus:ring-1 focus:ring-green-600 focus:ring-offset-1 focus:ring-offset-zinc-800`,
+          `${className} text-sm rounded-md py-4 flex h-12 gap-2 justify-center items-center w-full min-w-[120px] transition-colors outline-none focus:ring-1 focus:ring-[#193661] focus:ring-offset-1 focus:ring-offset-[#193661]`,
           {
-            'bg-green-700  hover:bg-green-600 disabled:bg-green-800 disabled:opacity-85 disabled:cursor-not-allowed':
+            'bg-red-800  hover:bg-red-700 disabled:bg-red-800 disabled:opacity-85 disabled:cursor-not-allowed':
               variant === 'primary',
 
-            'bg-transparent hover:bg-gray-600': variant === 'secondary',
+            'bg-transparent border-solid border-gray-400 border-1 hover:bg-[#193661]':
+              variant === 'secondary',
             'h-[38px]': size === 'sm',
           },
         )}
