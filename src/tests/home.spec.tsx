@@ -7,7 +7,7 @@ describe('Home page', () => {
     render(<Home />)
 
     expect(
-      screen.getByText('Welcome to Visit Card Generator!'),
+      screen.getByText('Welcome to iMMAP&apos;s Visit Card Generator!'),
     ).toBeInTheDocument()
   })
 })
