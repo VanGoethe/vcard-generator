@@ -1,6 +1,6 @@
 
 <h4 align="center">
- 🪪 Visit Card Generator 🪪
+ 🪪 iMMap Visit Card Generator 🪪
 </h4>
 
 <p align="center">
