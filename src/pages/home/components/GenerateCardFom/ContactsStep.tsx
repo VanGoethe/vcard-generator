@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { NextSeo } from 'next-seo'
 import { z } from 'zod'
 
@@ -9,6 +9,13 @@ import { MultiStep } from '@/components/MultiStep'
 import { TextInput } from '@/components/TextInput'
 
 import { ArrowRight } from 'phosphor-react'
+import { TextInputPhoneNumber } from '@/components/TextInputNumber'
+import { Select } from '@/components/Select'
+import { AxiosError } from 'axios'
+import { api } from '@/lib/axios'
+import { useRouter } from 'next/router'
+import { toast } from 'react-toastify'
+// import { CustomStepInput } from './CustomStep'
 
 const contactsStepSchema = z.object({
   email: z
@@ -18,17 +25,30 @@ const contactsStepSchema = z.object({
     .refine((email) => email.trim().length > 0, {
       message: 'You need to provide a email.',
     }),
-  github: z
-    .string({ required_error: 'You need to provide your Github username.' })
+  // countryCode: z
+  //   .string({ required_error: 'You need to provide a country code.' })
+  //   .max(191, { message: 'You have reached the maximum character size.' }),
+  phoneNumber: z
+    .string({ required_error: 'You need to provide a phone number.' })
+    .max(191, { message: 'You have reached the maximum character size.' }),
+  timezone: z
+    .string({
+      required_error: 'You need to provide your timezone.',
+    })
+    .refine((timezone) => timezone.trim().length > 0, {
+      message: 'You need to provide your timezone.',
+    }),
+  skype: z
+    .string({ required_error: 'You need to provide your skype username.' })
     .regex(/^([a-z\d\-]+)$/i, {
       message:
         "The username must contain only letters and numbers and separated by '-'.",
     })
     .max(191, { message: 'You have reached the maximum character size.' })
-    .refine((github) => github.trim().length > 0, {
-      message: 'You need to provide your Github username.',
+    .refine((skype) => skype.trim().length > 0, {
+      message: 'You need to provide your skype username.',
     })
-    .transform((github) => github.toLowerCase().replace(/\//g, '')),
+    .transform((skype) => skype.toLowerCase().replace(/\//g, '')),
   linkedin: z
     .string({ required_error: 'You need to provide your Linkedin username.' })
     .regex(/^([a-z\d\-]+)$/i, {
@@ -53,26 +73,103 @@ export function ContactsStep({ navigateTo }: ContactsStepProps) {
     register,
     handleSubmit,
     setValue,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<ContactsStepInput>({
     resolver: zodResolver(contactsStepSchema),
   })
 
-  function handleSubmitContacts(data: ContactsStepInput) {
-    const { email, github, linkedin } = data
+  const [isEdit, setIsEdit] = useState(false)
+  const router = useRouter()
+  const { id } = router.query
+
+  async function handleSubmitContactsWithSocials(data: ContactsStepInput) {
+    const {
+      email,
+      // countryCode,
+      phoneNumber,
+      timezone,
+      skype,
+      linkedin,
+    } = data
 
     const contactsInfo = {
       email,
-      github,
+      // phoneNumber: `(${countryCode})${phoneNumber}`,
+      phoneNumber,
+      timezone,
+      skype,
       linkedin,
     }
+    console.log(contactsInfo)
 
     sessionStorage.setItem(
       '@generateCard:contacts',
       JSON.stringify(contactsInfo),
     )
 
-    navigateTo('customStep')
+    // navigateTo('customStep')
+    try {
+      const describeInfo = sessionStorage.getItem('@generateCard:describe')
+      const contactsInfo = sessionStorage.getItem('@generateCard:contacts')
+
+      if (!describeInfo || !contactsInfo) {
+        return
+      }
+
+      // const hasImageFile = logoImage.length > 0
+      const describeInfoParsed: {
+        fullname: string
+        jobtitle: string
+      } = JSON.parse(describeInfo)
+      const contactsInfoParsed: {
+        skype: string
+        phoneNumber: string
+        timezone: string
+        linkedin: string
+        email: string
+      } = JSON.parse(contactsInfo)
+
+      if (isEdit) {
+        await api.put('/users/update', {
+          id,
+          ...describeInfoParsed,
+          ...contactsInfoParsed,
+          imageUrl: 'logo',
+          cardBackgroundColor: '#232325',
+          cardTextColor: '#ffffff',
+        })
+      } else {
+        await api.post('/users/register', {
+          ...describeInfoParsed,
+          ...contactsInfoParsed,
+          imageUrl: 'logo',
+          cardBackgroundColor: '#232325',
+          cardTextColor: '#ffffff',
+        })
+      }
+
+      sessionStorage.removeItem('@generateCard:describe')
+      sessionStorage.removeItem('@generateCard:contacts')
+      await router.push(`/cards/${describeInfoParsed.fullname}`)
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        if (error.response?.status === 500) {
+          return toast('We had a problem proceeding, try again later!', {
+            type: 'error',
+          })
+        }
+
+        if (error.response?.status === 409) {
+          toast('full name already registered.', {
+            type: 'error',
+          })
+        }
+      }
+
+      toast('We have a problem, check your internet connection.', {
+        type: 'error',
+      })
+    }
   }
 
   function handleGoBack() {
@@ -82,14 +179,21 @@ export function ContactsStep({ navigateTo }: ContactsStepProps) {
   useEffect(() => {
     const hasContactsInfo = sessionStorage.getItem('@generateCard:contacts')
 
+    if (id) {
+      setIsEdit(true)
+    }
+
     if (hasContactsInfo) {
       const ContactsInfo = JSON.parse(hasContactsInfo)
 
       setValue('email', ContactsInfo.email)
-      setValue('github', ContactsInfo.github)
+      // setValue('countryCode', ContactsInfo.countryCode)
+      setValue('phoneNumber', ContactsInfo.phoneNumber)
+      setValue('timezone', ContactsInfo.timezone)
+      setValue('skype', ContactsInfo.skype)
       setValue('linkedin', ContactsInfo.linkedin)
     }
-  }, [setValue])
+  }, [id, setValue])
 
   return (
     <>
@@ -99,7 +203,7 @@ export function ContactsStep({ navigateTo }: ContactsStepProps) {
       />
 
       <form
-        onSubmit={handleSubmit(handleSubmitContacts)}
+        onSubmit={handleSubmit(handleSubmitContactsWithSocials)}
         className="bg-zinc-800 max-w-[546px] w-full mx-auto p-9 rounded-md flex flex-col gap-6"
       >
         <div className="flex flex-col gap-2">
@@ -109,7 +213,7 @@ export function ContactsStep({ navigateTo }: ContactsStepProps) {
           </span>
         </div>
 
-        <MultiStep currentStep={2} size={3} />
+        <MultiStep currentStep={2} size={2} />
         <div className="flex flex-col gap-4">
           <label className="flex flex-col gap-2">
             Email
@@ -124,16 +228,41 @@ export function ContactsStep({ navigateTo }: ContactsStepProps) {
           </label>
 
           <label className="flex flex-col gap-2">
-            Github
+            Phone number
+            <TextInput.Root>
+              <TextInputPhoneNumber.Input
+                hasError={!!errors.phoneNumber}
+                placeholder="025712345678"
+                {...register('phoneNumber')}
+                // setCode={(val: any) => register('countryCode', val)}
+              />
+              <TextInput.MessageError message={errors.phoneNumber?.message} />
+            </TextInput.Root>
+          </label>
+
+          <label className="flex flex-col gap-2">
+            Timezone
+            <Select.Root>
+              <Select.Input
+                placeholder="your-user"
+                hasError={!!errors.timezone}
+                {...register('timezone')}
+              />
+              <Select.MessageError message={errors.timezone?.message} />
+            </Select.Root>
+          </label>
+
+          <label className="flex flex-col gap-2">
+            Skype
             <TextInput.Root>
               <TextInput.Input
                 placeholder="your-user"
-                hasError={!!errors.github}
-                {...register('github')}
+                hasError={!!errors.skype}
+                {...register('skype')}
               >
-                <TextInput.Prefix prefix="https://github.com/" />
+                <TextInput.Prefix prefix="https://skype.com/" />
               </TextInput.Input>
-              <TextInput.MessageError message={errors.github?.message} />
+              <TextInput.MessageError message={errors.skype?.message} />
             </TextInput.Root>
           </label>
 
@@ -157,9 +286,15 @@ export function ContactsStep({ navigateTo }: ContactsStepProps) {
               type="button"
               variant="secondary"
               onClick={handleGoBack}
+              disabled={isSubmitting}
             />
 
-            <Button title="Next" type="submit">
+            <Button
+              title="Validate"
+              type="submit"
+              isLoading={isSubmitting}
+              disabled={isSubmitting}
+            >
               <ArrowRight weight="bold" />
             </Button>
           </div>

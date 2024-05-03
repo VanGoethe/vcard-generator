@@ -1,9 +1,9 @@
 import { prisma } from '..'
 
-export async function findUserByUsername(username: string) {
+export async function findUserByFullname(fullname: string) {
   const user = prisma.user.findUnique({
     where: {
-      username,
+      fullname,
     },
   })
 

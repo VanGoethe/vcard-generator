@@ -13,12 +13,10 @@ import { ArrowRight } from 'phosphor-react'
 import { AxiosError } from 'axios'
 import { NextSeo } from 'next-seo'
 
+import Logo from '../../../../../assets/immap-logo.png'
+
 interface CustomStepProps {
   navigateTo: (step: 'describeStep' | 'contactsStep' | 'customStep') => void
-}
-
-interface UploadedImage {
-  url: string
 }
 
 const MAX_FILE_SIZE = 400000
@@ -80,7 +78,7 @@ export function CustomStep({ navigateTo }: CustomStepProps) {
   const customStepForm = useForm<CustomStepInput>({
     resolver: zodResolver(customStepSchema),
     defaultValues: {
-      backgroundColor: '#000000',
+      backgroundColor: '#232325',
       textColor: '#FFFFFF',
     },
   })
@@ -93,8 +91,6 @@ export function CustomStep({ navigateTo }: CustomStepProps) {
 
   async function handleSubmitSocial(data: CustomStepInput) {
     try {
-      const { backgroundColor, textColor, logoImage } = data
-
       const describeInfo = sessionStorage.getItem('@generateCard:describe')
       const contactsInfo = sessionStorage.getItem('@generateCard:contacts')
 
@@ -102,47 +98,48 @@ export function CustomStep({ navigateTo }: CustomStepProps) {
         return
       }
 
-      const hasImageFile = logoImage.length > 0
+      // const hasImageFile = logoImage.length > 0
       const describeInfoParsed: {
-        name: string
-        description: string
-        username: string
+        fullname: string
+        jobtitle: string
       } = JSON.parse(describeInfo)
       const contactsInfoParsed: {
-        github: string
+        skype: string
+        phoneNumber: string
+        timezone: string
         linkedin: string
         email: string
       } = JSON.parse(contactsInfo)
 
-      let uploadedImage: UploadedImage | null = null
+      // let uploadedImage: UploadedImage | null = null
 
-      if (hasImageFile) {
-        const formData = new FormData()
-        formData.append('file', logoImage?.[0])
-        formData.append('upload_preset', 'card-qrcode')
+      // if (hasImageFile) {
+      //   const formData = new FormData()
+      //   formData.append('file', logoImage?.[0])
+      //   formData.append('upload_preset', 'card-qrcode')
 
-        const response = await fetch(
-          'https://api.cloudinary.com/v1_1/dhexs29hy/image/upload',
-          {
-            method: 'POST',
-            body: formData,
-          },
-        )
+      //   const response = await fetch(
+      //     'https://api.cloudinary.com/v1_1/dhexs29hy/image/upload',
+      //     {
+      //       method: 'POST',
+      //       body: formData,
+      //     },
+      //   )
 
-        uploadedImage = await response.json()
-      }
+      //   uploadedImage = await response.json()
+      // }
 
       await api.post('/users/register', {
         ...describeInfoParsed,
         ...contactsInfoParsed,
-        imageUrl: uploadedImage ? uploadedImage.url : null,
-        cardBackgroundColor: backgroundColor,
-        cardTextColor: textColor,
+        imageUrl: Logo,
+        cardBackgroundColor: '#232325',
+        cardTextColor: '#ffffff',
       })
 
       sessionStorage.removeItem('@generateCard:describe')
       sessionStorage.removeItem('@generateCard:contacts')
-      await router.push(`/cards/${describeInfoParsed.username}`)
+      await router.push(`/cards/${describeInfoParsed.fullname}`)
     } catch (error) {
       if (error instanceof AxiosError) {
         if (error.response?.status === 500) {
@@ -152,7 +149,7 @@ export function CustomStep({ navigateTo }: CustomStepProps) {
         }
 
         if (error.response?.status === 409) {
-          toast('Username already registered.', {
+          toast('full name already registered.', {
             type: 'error',
           })
         }
