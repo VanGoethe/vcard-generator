@@ -20,7 +20,7 @@ import { toast } from 'react-toastify'
 const contactsStepSchema = z.object({
   email: z
     .string({ required_error: 'You need to provide a email.' })
-    .email({ message: 'You need to provide a valid email.' })
+    // .email({ message: 'You need to provide a valid email.' })
     .max(191, { message: 'You have reached the maximum character size.' })
     .refine((email) => email.trim().length > 0, {
       message: 'You need to provide a email.',
@@ -220,9 +220,12 @@ export function ContactsStep({ navigateTo }: ContactsStepProps) {
             <TextInput.Root>
               <TextInput.Input
                 hasError={!!errors.email}
-                placeholder="johndoe@email.com"
+                placeholder="johndoe"
                 {...register('email')}
-              />
+                hasSuffix={true}
+              >
+                <TextInput.Suffix suffix="@immap.org" />
+              </TextInput.Input>
               <TextInput.MessageError message={errors.email?.message} />
             </TextInput.Root>
           </label>
@@ -232,7 +235,7 @@ export function ContactsStep({ navigateTo }: ContactsStepProps) {
             <TextInput.Root>
               <TextInputPhoneNumber.Input
                 hasError={!!errors.phoneNumber}
-                placeholder="025712345678"
+                placeholder="+25712345678"
                 {...register('phoneNumber')}
                 // setCode={(val: any) => register('countryCode', val)}
               />

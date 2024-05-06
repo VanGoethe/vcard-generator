@@ -122,22 +122,21 @@ export default function Card({ user }: CardProps) {
 
         <div
           ref={cardRef}
-          className={`w-[500px] h-[350px] rounded-sm overflow-hidden shadow-sm shadow-black/10 mx-auto flex flex-col`}
+          className={`w-[400px] h-auto rounded-sm overflow-hidden shadow-sm shadow-black/10 mx-auto flex flex-col`}
           style={{ backgroundColor: '#FFFFFF' }}
         >
-          <div className="grid h-full grid-cols-10 gap-2 ">
-            <div className="bg-left"></div>
-            <div className="col-span-8 p-10">
+          <div className="h-full gap-2 ">
+            <div className="px-10 py-5">
               <div className="flex flex-col w-full h-full justify-center items-center ">
-                <div className="flex flex-col w-full h-full gap-4 justify-center items-center">
-                  <div className="w-[120px] h-[37px]">
+                <div className="flex flex-col w-full h-full gap-2 justify-center items-center">
+                  <div className="w-[120px] h-auto">
                     {/* <Image
                       src={'/immap-logo.png'}
                       alt={user.fullname}
                       width={120}
                       height={60}
                     /> */}
-                    <img src="/immap-logo.png" alt={user.fullname} />
+                    <img src="/immap-logo-small.png" alt={user.fullname} />
                   </div>
 
                   <span
@@ -146,11 +145,15 @@ export default function Card({ user }: CardProps) {
                   >
                     {user.fullname}
                   </span>
+
                   <span
-                    className="text-sm text-center italic capitalize font-medium"
-                    style={{ color: '#232325', fontSize: '12px' }}
+                    className="text-lg capitalize font-bold mb-8"
+                    style={{
+                      // color: '#193661',
+                      color: 'rgb(109 110 113)',
+                    }}
                   >
-                    Scan QR code for informations
+                    {user.jobtitle}
                   </span>
 
                   <Link
@@ -160,7 +163,7 @@ export default function Card({ user }: CardProps) {
                         ? env.NEXT_PUBLIC_DEVELOPMENT_URL
                         : env.NEXT_PUBLIC_PRODUCTION_URL
                     }/${user.id}/${replaceSpaceToDash(user.fullname)}`}
-                    className="w-[100px] h-[100px] bg-white p-2 rounded-sm border-[#bf1f26] border-1"
+                    className="w-[200px] h-[200px] bg-white p-2 rounded-sm border-[#bf1f26] border-1"
                   >
                     <QRCode
                       value={`${
@@ -171,6 +174,22 @@ export default function Card({ user }: CardProps) {
                       className="w-full h-full"
                     />
                   </Link>
+
+                  <span
+                    className="text-2xl text-center font-semibold mt-8"
+                    style={{ color: '#be2126', fontSize: '16px' }}
+                  >
+                    Scan to download the details
+                  </span>
+                  <div className="w-[300px] h-auto mt-4">
+                    {/* <Image
+                      src={'/immap-logo.png'}
+                      alt={user.fullname}
+                      width={120}
+                      height={60}
+                    /> */}
+                    <img src="/slogan.png" alt={user.fullname} />
+                  </div>
                 </div>
               </div>
               {/* <div className="text-right text-black">
@@ -188,7 +207,6 @@ export default function Card({ user }: CardProps) {
                 </div>
               </div> */}
             </div>
-            <div className="bg-right"></div>
           </div>
         </div>
         <Button

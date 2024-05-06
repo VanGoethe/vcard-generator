@@ -3,12 +3,16 @@ import { NextSeo } from 'next-seo'
 import { findUserById } from '@/lib/prisma/utils/find-user-by-id'
 
 import Image from 'next/image'
-import Link from 'next/link'
+// import Link from 'next/link'
 
-import { Clock, Download, Envelope, LinkedinLogo, Phone } from 'phosphor-react'
-import { env } from '@/env'
-import { replaceSpaceToDash } from '@/utils/replace-space-to-dash'
-import QRCode from 'react-qr-code'
+import {
+  // Clock,
+  Download,
+  // Envelope, LinkedinLogo, Phone
+} from 'phosphor-react'
+// import { env } from '@/env'
+// import { replaceSpaceToDash } from '@/utils/replace-space-to-dash'
+// import QRCode from 'react-qr-code'
 import vCard from 'vcf'
 import { toast } from 'react-toastify'
 import { Button } from '@/components/Button'
@@ -78,16 +82,16 @@ export default function UserPage({ user }: UserPageProps) {
 
       <div className="bg-gradient-radial from-zinc-900/95 to-zinc-900 w-full h-screen flex flex-col justify-center items-center">
         <div
-          className="max-w-[500px] h-[290px] w-full px-4 py-4 rounded-sm"
+          className="max-w-[400px] h-auto w-full px-4 py-4 rounded-sm"
           style={{ backgroundColor: '#FFFFFF', color: '#000' }}
         >
-          <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 gap-4 px-6 mt-2">
+          <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 gap-4 px-6 mt-2">
             <div>
               <div className="flex flex-col w-full h-full gap-4 justify-center items-center">
                 {user.image_url && (
                   <Image
                     className="rounded-md"
-                    src={'/immap-logo.png'}
+                    src={'/immap-logo-small.png'}
                     alt={user.fullname}
                     width={120}
                     height={120}
@@ -97,7 +101,7 @@ export default function UserPage({ user }: UserPageProps) {
                   />
                 )}
 
-                <Link
+                {/* <Link
                   target="_blank"
                   href={`${
                     env.NODE_ENV === 'development'
@@ -114,80 +118,84 @@ export default function UserPage({ user }: UserPageProps) {
                     }/${user.id}/${replaceSpaceToDash(user.fullname)}`}
                     className="w-full h-full"
                   />
-                </Link>
+                </Link> */}
               </div>
             </div>
             <div>
-              <div className="flex flex-col gap-1 w-full items-end text-right text-[#414141]">
+              <div className="flex flex-col gap-1 w-full items-center text-center text-[#414141] mt-4">
                 <strong className="text-2xl capitalize font-bold text-[#193661]">
                   {user.fullname}
                 </strong>
-                <div
-                  className="flex flex-col items-end"
-                  style={{ marginTop: '-5px', marginBottom: '15px' }}
-                >
+                <div className="flex flex-col items-center mt-2 mb-8">
                   <span
                     className="flex flex-col break-all font-light"
                     style={{ color: '#414141' }}
                   >
                     {user.jobtitle}
                   </span>
-                  <span className="flex flex-col items-end underline-gray mt-1">
+                  <span className="flex flex-col items-center underline-gray mt-1">
                     <span className={'underline-red'}></span>
                   </span>
                 </div>
-                <div className="flex items-center gap-2 my-[2px]">
-                  <span className="flex flex-col break-all text-[12px]">
+                <div className="flex items-center gap-2 my-[2px] text-[14px]">
+                  <span className="text-[#6d6e71] text-[12px]">Timezone: </span>
+                  <span className="flex flex-col break-all">
                     {user.timezone}
                   </span>
-                  <span className="flex justify-center items-center bg-[#193661] p-[4px] h-[20px] rounded-sm">
+                  {/* <span className="flex justify-center items-center bg-[#193661] p-[4px] h-[20px] rounded-sm">
                     <Clock color="#ffffff" size={12} />
-                  </span>
+                  </span> */}
                 </div>
-                <div className="flex items-center gap-2 my-[2px]">
-                  <span className="flex flex-col break-all text-[12px]">
+                <div className="flex items-center gap-2 my-[2px] text-[14px]">
+                  <span className="text-[#6d6e71] text-[12px]">
+                    Phone number:{' '}
+                  </span>
+                  <span className="flex flex-col break-all">
                     {user.phoneNumber}
                   </span>
-                  <span className="flex justify-center items-center bg-[#193661] p-[4px] h-[20px] rounded-sm">
+                  {/* <span className="flex justify-center items-center bg-[#193661] p-[4px] h-[20px] rounded-sm">
                     <Phone color="#ffffff" size={12} />
-                  </span>
+                  </span> */}
                 </div>
-                <div className="flex items-center gap-2 my-[2px]">
+                <div className="flex items-center gap-2 my-[2px] text-[14px]">
+                  <span className="text-[#6d6e71] text-[12px]">Email: </span>
                   <a
                     href={`mailto:${user.email}`}
                     target="_blank"
-                    className="flex flex-col break-all text-[12px] underline text-[#bf1f26]"
+                    className="flex flex-col break-all underline text-[#bf1f26]"
                     rel="noreferrer"
                   >
                     {user.email}
                   </a>
-                  <span className="flex justify-center items-center bg-[#193661] p-[4px] h-[20px] rounded-sm">
+                  {/* <span className="flex justify-center items-center bg-[#193661] p-[4px] h-[20px] rounded-sm">
                     <Envelope color="#ffffff" size={12} />
-                  </span>
+                  </span> */}
                 </div>
-                <div className="flex items-center gap-2 my-[2px]">
+                <div className="flex items-center gap-2 my-[2px] text-[14px]">
+                  <span className="text-[#6d6e71] text-[12px]">LinkedIn: </span>
                   <a
                     href={`https://linkedin.com/in/${user.linkedin}`}
                     target="_blank"
-                    className="flex flex-col break-all text-[11px] underline text-[#bf1f26]"
+                    className="flex flex-col break-all  underline text-[#bf1f26]"
                     rel="noreferrer"
                   >
                     https://linkedin.com/in/{user.linkedin}
                   </a>
-                  <span className="flex justify-center items-center bg-[#193661] p-[4px] h-[20px] rounded-sm">
+                  {/* <span className="flex justify-center items-center bg-[#193661] p-[4px] h-[20px] rounded-sm">
                     <LinkedinLogo color="#ffffff" size={12} />
-                  </span>
+                  </span> */}
                 </div>
-                <div className="flex items-center gap-2 my-[2px]">
+                <div className="flex items-center gap-2 my-[2px] text-[14px]">
+                  <span className="text-[#6d6e71] text-[12px]">Skype: </span>
                   <a
                     href={`https://skype.com/${user.skype}`}
                     target="_blank"
-                    className="flex flex-col break-all text-[11px] underline text-[#bf1f26]"
+                    className="flex flex-col break-all underline text-[#bf1f26]"
                     rel="noreferrer"
                   >
                     https://skype.com/{user.skype}
                   </a>
-                  <span className="flex justify-center items-center bg-[#193661] p-[4px] h-[20px] rounded-sm">
+                  {/* <span className="flex justify-center items-center bg-[#193661] p-[4px] h-[20px] rounded-sm">
                     <Image
                       className="rounded-md invert"
                       src={'/skype-logo.svg'}
@@ -195,49 +203,22 @@ export default function UserPage({ user }: UserPageProps) {
                       width={12}
                       height={12}
                     />
-                  </span>
+                  </span> */}
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="relative h-[25px mt-6">
+          <div className="relative flex items-end h-[20px] mt-8">
             <div className="bg-left-black"></div>
             <div className="bg-right-red"></div>
           </div>
-
-          {/* <div className="grid grid-cols-1 sm:grid-cols-3 w-full gap-2">
-            <Link
-              href={`mailto:${user.email}`}
-              target="_blank"
-              className="text-sm bg-red-600 outline-none hover:bg-red-500 transition-colors rounded-md py-4 flex h-12 gap-2 justify-center items-center w-full focus:ring-1 focus:ring-red-600 focus:ring-offset-1 focus:ring-offset-zinc-800"
-            >
-              <Envelope weight="bold" size={18} />
-              Email
-            </Link>
-            <Link
-              href={`https://linkedin.com/in/${user.linkedin}`}
-              target="_blank"
-              className="text-sm bg-blue-600 hover:bg-blue-500 transition-colors rounded-md py-4 flex h-12 gap-2 justify-center items-center w-full outline-none focus:ring-1 focus:ring-blue-600 focus:ring-offset-1 focus:ring-offset-zinc-800"
-            >
-              <LinkedinLogo weight="bold" size={18} />
-              Linkedin
-            </Link>
-            <Link
-              href={`https://skype.com/in/${user.skype}`}
-              target="_blank"
-              className="text-sm bg-blue-600 hover:bg-blue-500 transition-colors rounded-md py-4 flex h-12 gap-2 justify-center items-center w-full outline-none focus:ring-1 focus:ring-blue-600 focus:ring-offset-1 focus:ring-offset-zinc-800"
-            >
-              <LinkedinLogo weight="bold" size={18} />
-              skype
-            </Link>
-          </div> */}
         </div>
         <Button
           title="Save contact"
           size="sm"
           onClick={handleDownloadVCard}
-          className="max-w-[500px] mt-4"
+          className="max-w-[400px] mt-4"
         >
           <Download weight="bold" size={18} />
         </Button>

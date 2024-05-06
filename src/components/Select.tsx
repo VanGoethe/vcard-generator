@@ -27,29 +27,30 @@ interface SelectProps extends ComponentPropsWithoutRef<'select'> {
 
 const SelectInput = forwardRef<HTMLSelectElement, SelectProps>(
   ({ children, hasError, className, ...props }: SelectProps, ref) => {
-    const timezones = moment.tz.names().map((zone) => {
-      const offset = moment.tz(zone).utcOffset()
-      return {
-        value: zone,
-        label: `${zone} (GMT${offset >= 0 ? '+' : ''}${offset})`,
-      }
-    })
+    // const timezones = moment.tz.names().map((zone) => {
+    //   const offset = moment.tz(zone).utcOffset()
+    //   return {
+    //     value: zone,
+    //     label: `${zone} (GMT${offset >= 0 ? '+' : ''}${offset})`,
+    //   }
+    // })
     const timez = moment.tz.names()
     const grouped = {} as any
+    console.log(moment.tz, 'timzone')
 
     timez.forEach((tz) => {
       const offsetInMinutes = moment.tz(tz).utcOffset()
       const offsetInHours = offsetInMinutes / 60
       if (!grouped[offsetInHours]) {
         grouped[offsetInHours] = {
-          value: tz,
+          value: `${tz} (GMT${offsetInHours >= 0 ? '+' : ''}${offsetInHours})`,
           label: `${tz} (GMT${offsetInHours >= 0 ? '+' : ''}${offsetInHours})`,
         }
       }
     })
 
     const primaryTimezones = Object.values(grouped)
-    console.log(primaryTimezones, timezones)
+    // console.log(primaryTimezones, timezones)
 
     return (
       <div
