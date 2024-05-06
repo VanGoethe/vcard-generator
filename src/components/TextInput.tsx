@@ -22,10 +22,14 @@ interface TextInputProps extends ComponentPropsWithoutRef<'input'> {
   children?: ReactNode
   hasError?: boolean
   className?: string
+  hasSuffix?: boolean
 }
 
 const TextInputInput = forwardRef<HTMLInputElement, TextInputProps>(
-  ({ children, hasError, className, ...props }: TextInputProps, ref) => {
+  (
+    { children, hasError, className, hasSuffix, ...props }: TextInputProps,
+    ref,
+  ) => {
     return (
       <div
         className={clsx(
@@ -40,7 +44,7 @@ const TextInputInput = forwardRef<HTMLInputElement, TextInputProps>(
           },
         )}
       >
-        {children}
+        {hasSuffix ? null : children}
         <input
           ref={ref}
           className={`w-full h-full bg-transparent focus:outline-none placeholder:text-gray-500 ${
@@ -48,6 +52,7 @@ const TextInputInput = forwardRef<HTMLInputElement, TextInputProps>(
           }`}
           {...props}
         />
+        {hasSuffix ? children : null}
       </div>
     )
   },
@@ -66,7 +71,8 @@ function TextInputMessageError({ message }: TextInputMessageErrorProps) {
 TextInputMessageError.displayName = 'TextInput.MessageError'
 
 interface TextInputIconProps {
-  prefix: string
+  prefix?: string
+  suffix?: string
 }
 
 function TextInputPrefix({ prefix }: TextInputIconProps) {
@@ -79,9 +85,20 @@ function TextInputPrefix({ prefix }: TextInputIconProps) {
 
 TextInputPrefix.displayName = 'TextInput.Prefix'
 
+function TextInputSuffix({ suffix }: TextInputIconProps) {
+  return (
+    <span className="text-zinc-400 flex items-center justify-center">
+      {suffix}
+    </span>
+  )
+}
+
+TextInputSuffix.displayName = 'TextInput.Suffix'
+
 export const TextInput = {
   Root: TextInputRoot,
   Input: TextInputInput,
   Prefix: TextInputPrefix,
+  Suffix: TextInputSuffix,
   MessageError: TextInputMessageError,
 }

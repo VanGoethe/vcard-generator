@@ -8,7 +8,7 @@ const registerBodySchema = z.object({
     .transform((name) => name.toLowerCase().replace(/\//g, '')),
   // username: z.string().regex(/^([a-z\d\-]+)$/i),
   jobtitle: z.string(),
-  email: z.string().email(),
+  email: z.string(),
   linkedin: z
     .string()
     .regex(/^([a-z\d\-]+)$/i)
@@ -70,7 +70,7 @@ export default async function handler(
   const user = await prisma.user.create({
     data: {
       jobtitle,
-      email,
+      email: `${email}@immap.org`,
       linkedin,
       fullname,
       timezone,
