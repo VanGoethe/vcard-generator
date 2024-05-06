@@ -87,4 +87,22 @@ jobs:
   #         vercel-org-id: ${{ secrets.ORG_ID}}
   #         vercel-project-id: ${{ secrets.PROJECT_ID}}
   #         vercel-args: '--prod'              
-      
+      - name: Deploy to Server
+        if: ${{ success() }}
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PEM }}
+          script_stop: true
+          script: |
+            cd /var/www/html
+            cd immap-website-frontend
+            sudo git stash
+            sudo git pull
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh 
+            npm install
+            npm run build
+            pm2 restart website
+            pm2 status
