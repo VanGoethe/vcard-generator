@@ -239,7 +239,7 @@ export function ContactsStep({ navigateTo }: ContactsStepProps) {
             <TextInput.Root>
               <TextInputPhoneNumber.Input
                 hasError={!!errors.phoneNumber}
-                placeholder="+25712345678"
+                placeholder="0025712345678"
                 {...register('phoneNumber')}
                 // setCode={(val: any) => register('countryCode', val)}
               />

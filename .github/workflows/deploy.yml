@@ -88,6 +88,6 @@ jobs:
             sudo git pull
             export NVM_DIR=~/.nvm
             source ~/.nvm/nvm.sh 
-            npm install
-            pm2 restart ecard
-            pm2 status
+            sudo npm install
+            sudo pm2 restart ecard
+            sudo pm2 status

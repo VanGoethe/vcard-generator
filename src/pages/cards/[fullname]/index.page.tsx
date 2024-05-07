@@ -39,11 +39,7 @@ export default function Card({ user }: CardProps) {
 
   async function handleNavigateToUserPage() {
     await router.push(
-      `${
-        env.NODE_ENV === 'development'
-          ? env.NEXT_PUBLIC_DEVELOPMENT_URL
-          : env.NEXT_PUBLIC_PRODUCTION_URL
-      }/${user.id}/${replaceSpaceToDash(user.fullname)}`,
+      `https://ecard.immap.org/${user.id}/${replaceSpaceToDash(user.fullname)}`,
     )
   }
 
