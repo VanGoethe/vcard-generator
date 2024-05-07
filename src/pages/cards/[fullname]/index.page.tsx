@@ -38,9 +38,7 @@ export default function Card({ user }: CardProps) {
   const cardRef = useRef<HTMLDivElement | null>(null)
 
   async function handleNavigateToUserPage() {
-    await router.push(
-      `https://ecard.immap.org/${user.id}/${replaceSpaceToDash(user.fullname)}`,
-    )
+    await router.push(`/${user.id}/${replaceSpaceToDash(user.fullname)}`)
   }
 
   function handleDownloadCard() {
