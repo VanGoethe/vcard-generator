@@ -83,12 +83,12 @@ jobs:
           script_stop: true
           script: |
             cd /var/www/html
-            cd immap-website-frontend
+            cd immap-vcard-generator            
             sudo git stash
             sudo git pull
             export NVM_DIR=~/.nvm
             source ~/.nvm/nvm.sh 
             npm install
             npm run build
-            pm2 restart website
+            pm2 restart ecard
             pm2 status

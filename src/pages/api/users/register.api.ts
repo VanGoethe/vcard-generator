@@ -8,15 +8,15 @@ const registerBodySchema = z.object({
     .transform((name) => name.toLowerCase().replace(/\//g, '')),
   // username: z.string().regex(/^([a-z\d\-]+)$/i),
   jobtitle: z.string(),
-  email: z.string(),
-  linkedin: z
-    .string()
-    .regex(/^([a-z\d\-]+)$/i)
-    .transform((linkedin) => linkedin.toLowerCase().replace(/\//g, '')),
-  skype: z
-    .string()
-    .regex(/^([a-z\d\-]+)$/i)
-    .transform((skype) => skype.toLowerCase().replace(/\//g, '')),
+  email: z.string().refine((email) => !/@/.test(email), {
+    message: 'You dont`t need to add an prefix(@immap.org) of your email',
+  }),
+  linkedin: z.string(),
+  // .regex(/^([a-z\d\-]+)$/i)
+  // .transform((linkedin) => linkedin.toLowerCase().replace(/\//g, '')),
+  skype: z.string(),
+  // .regex(/^([a-z\d\-]+)$/i)
+  // .transform((skype) => skype.toLowerCase().replace(/\//g, '')),
   timezone: z.string(),
   phoneNumber: z.string(),
   imageUrl: z.string().nullable(),
@@ -70,7 +70,7 @@ export default async function handler(
   const user = await prisma.user.create({
     data: {
       jobtitle,
-      email: `${email}@immap.org`,
+      email: `${email}`,
       linkedin,
       fullname,
       timezone,

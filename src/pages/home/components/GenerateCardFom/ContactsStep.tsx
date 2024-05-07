@@ -24,7 +24,11 @@ const contactsStepSchema = z.object({
     .max(191, { message: 'You have reached the maximum character size.' })
     .refine((email) => email.trim().length > 0, {
       message: 'You need to provide a email.',
+    })
+    .refine((email) => !/@/.test(email), {
+      message: 'You do not need to add "@immap.org" of your email',
     }),
+
   // countryCode: z
   //   .string({ required_error: 'You need to provide a country code.' })
   //   .max(191, { message: 'You have reached the maximum character size.' }),
@@ -40,26 +44,26 @@ const contactsStepSchema = z.object({
     }),
   skype: z
     .string({ required_error: 'You need to provide your skype username.' })
-    .regex(/^([a-z\d\-]+)$/i, {
-      message:
-        "The username must contain only letters and numbers and separated by '-'.",
-    })
+    // .regex(/^([a-z\d\-]+)$/i, {
+    //   message:
+    //     "The username must contain only letters and numbers and separated by '-'.",
+    // })
     .max(191, { message: 'You have reached the maximum character size.' })
     .refine((skype) => skype.trim().length > 0, {
       message: 'You need to provide your skype username.',
-    })
-    .transform((skype) => skype.toLowerCase().replace(/\//g, '')),
+    }),
+  // .transform((skype) => skype.toLowerCase().replace(/\//g, '')),
   linkedin: z
     .string({ required_error: 'You need to provide your Linkedin username.' })
-    .regex(/^([a-z\d\-]+)$/i, {
-      message:
-        "The username must contain only letters and numbers and separated by '-'.",
-    })
+    // .regex(/^([a-z\d\-]+)$/i, {
+    //   message:
+    //     "The username must contain only letters and numbers and separated by '-'.",
+    // })
     .max(191, { message: 'You have reached the maximum character size.' })
     .refine((linkedin) => linkedin.trim().length > 0, {
       message: 'You need to provide your Linkedin username.',
-    })
-    .transform((linkedin) => linkedin.toLowerCase().replace(/\//g, '')),
+    }),
+  // .transform((linkedin) => linkedin.toLowerCase().replace(/\//g, '')),
 })
 
 type ContactsStepInput = z.infer<typeof contactsStepSchema>

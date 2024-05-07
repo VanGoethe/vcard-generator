@@ -115,7 +115,13 @@ export function DescribeStep({ navigateTo }: DescribeStepProps) {
     if (hasDescribeInfo) {
       const DescribeInfoParsed = JSON.parse(hasDescribeInfo)
 
-      setValue('fullname', DescribeInfoParsed.fullname)
+      setValue(
+        'fullname',
+        DescribeInfoParsed.fullname
+          .split(' ')
+          .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' '),
+      )
       // setValue('middlename', DescribeInfoParsed.middlename)
       // setValue('lastname', DescribeInfoParsed.lastname)
       setValue('jobtitle', DescribeInfoParsed.jobtitle)

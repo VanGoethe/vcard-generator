@@ -27,29 +27,30 @@ interface SelectProps extends ComponentPropsWithoutRef<'select'> {
 
 const SelectInput = forwardRef<HTMLSelectElement, SelectProps>(
   ({ children, hasError, className, ...props }: SelectProps, ref) => {
-    // const timezones = moment.tz.names().map((zone) => {
-    //   const offset = moment.tz(zone).utcOffset()
-    //   return {
-    //     value: zone,
-    //     label: `${zone} (GMT${offset >= 0 ? '+' : ''}${offset})`,
-    //   }
-    // })
-    const timez = moment.tz.names()
-    const grouped = {} as any
-    console.log(moment.tz, 'timzone')
-
-    timez.forEach((tz) => {
-      const offsetInMinutes = moment.tz(tz).utcOffset()
-      const offsetInHours = offsetInMinutes / 60
-      if (!grouped[offsetInHours]) {
-        grouped[offsetInHours] = {
-          value: `${tz} (GMT${offsetInHours >= 0 ? '+' : ''}${offsetInHours})`,
-          label: `${tz} (GMT${offsetInHours >= 0 ? '+' : ''}${offsetInHours})`,
-        }
+    const timezones = moment.tz.names().map((zone) => {
+      const offset = moment.tz(zone).utcOffset()
+      const offsetInHours = offset / 60
+      return {
+        value: `${zone} (GMT${offsetInHours >= 0 ? '+' : ''}${offsetInHours})`,
+        label: `${zone} (GMT${offsetInHours >= 0 ? '+' : ''}${offsetInHours})`,
       }
     })
+    // const timez = moment.tz.names()
+    // const grouped = {} as any
+    // console.log(moment.tz, 'timzone')
 
-    const primaryTimezones = Object.values(grouped)
+    // timez.forEach((tz) => {
+    //   const offsetInMinutes = moment.tz(tz).utcOffset()
+    //   const offsetInHours = offsetInMinutes / 60
+    //   if (!grouped[offsetInHours]) {
+    //     grouped[offsetInHours] = {
+    //       value: `${tz} (GMT${offsetInHours >= 0 ? '+' : ''}${offsetInHours})`,
+    //       label: `${tz} (GMT${offsetInHours >= 0 ? '+' : ''}${offsetInHours})`,
+    //     }
+    //   }
+    // })
+
+    // const primaryTimezones = Object.values(grouped)
     // console.log(primaryTimezones, timezones)
 
     return (
@@ -68,7 +69,7 @@ const SelectInput = forwardRef<HTMLSelectElement, SelectProps>(
           className="w-full h-full bg-transparent focus:outline-none placeholder:text-gray-500 "
           {...props}
         >
-          {primaryTimezones.map((timezone: any, index) => (
+          {timezones.map((timezone: any, index) => (
             <option key={index} value={timezone.value}>
               {timezone.label}
             </option>

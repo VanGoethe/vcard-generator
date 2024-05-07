@@ -39,9 +39,21 @@ export default function UserPage({ user }: UserPageProps) {
       // eslint-disable-next-line new-cap
       const card = new vCard()
       // add properties to vCard
-      card.set('fn', user.fullname)
-      card.set('n', user.fullname)
-      card.set('email', user.email)
+      card.set(
+        'fn',
+        user.fullname
+          .split(' ')
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' '),
+      )
+      card.set(
+        'n',
+        user.fullname
+          .split(' ')
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' '),
+      )
+      card.set('email', `${user.email}@immap.org`)
       card.set('title', user.jobtitle)
       card.set('tel', user.phoneNumber)
       card.set('mobile', user.phoneNumber)
@@ -123,21 +135,21 @@ export default function UserPage({ user }: UserPageProps) {
             </div>
             <div>
               <div className="flex flex-col gap-1 w-full items-center text-center text-[#414141] mt-4">
-                <strong className="text-2xl capitalize font-bold text-[#193661]">
+                <h3 className="text-2xl capitalize font-bold text-[#193661]">
                   {user.fullname}
-                </strong>
-                <div className="flex flex-col items-center mt-2 mb-8">
-                  <span
-                    className="flex flex-col break-all font-light"
+                </h3>
+                <div className="flex flex-col items-baseline mt-2 mb-8">
+                  <h4
+                    className="flex flex-col font-light"
                     style={{ color: '#414141' }}
                   >
                     {user.jobtitle}
-                  </span>
+                  </h4>
                   <span className="flex flex-col items-center underline-gray mt-1">
                     <span className={'underline-red'}></span>
                   </span>
                 </div>
-                <div className="flex items-center gap-2 my-[2px] text-[14px]">
+                <div className="flex items-baseline gap-2 my-[2px] text-[14px]">
                   <span className="text-[#6d6e71] text-[12px]">Timezone: </span>
                   <span className="flex flex-col break-all">
                     {user.timezone}
@@ -146,7 +158,7 @@ export default function UserPage({ user }: UserPageProps) {
                     <Clock color="#ffffff" size={12} />
                   </span> */}
                 </div>
-                <div className="flex items-center gap-2 my-[2px] text-[14px]">
+                <div className="flex items-baseline gap-2 my-[2px] text-[14px]">
                   <span className="text-[#6d6e71] text-[12px]">
                     Phone number:{' '}
                   </span>
@@ -157,21 +169,21 @@ export default function UserPage({ user }: UserPageProps) {
                     <Phone color="#ffffff" size={12} />
                   </span> */}
                 </div>
-                <div className="flex items-center gap-2 my-[2px] text-[14px]">
+                <div className="flex items-baseline gap-2 my-[2px] text-[14px]">
                   <span className="text-[#6d6e71] text-[12px]">Email: </span>
                   <a
-                    href={`mailto:${user.email}`}
+                    href={`mailto:${user.email}@immap.org`}
                     target="_blank"
                     className="flex flex-col break-all underline text-[#bf1f26]"
                     rel="noreferrer"
                   >
-                    {user.email}
+                    {`${user.email}@immap.org`}
                   </a>
                   {/* <span className="flex justify-center items-center bg-[#193661] p-[4px] h-[20px] rounded-sm">
                     <Envelope color="#ffffff" size={12} />
                   </span> */}
                 </div>
-                <div className="flex items-center gap-2 my-[2px] text-[14px]">
+                <div className="flex items-baseline gap-2 my-[2px] text-[14px]">
                   <span className="text-[#6d6e71] text-[12px]">LinkedIn: </span>
                   <a
                     href={`https://linkedin.com/in/${user.linkedin}`}
@@ -185,7 +197,7 @@ export default function UserPage({ user }: UserPageProps) {
                     <LinkedinLogo color="#ffffff" size={12} />
                   </span> */}
                 </div>
-                <div className="flex items-center gap-2 my-[2px] text-[14px]">
+                <div className="flex items-baseline gap-2 my-[2px] text-[14px]">
                   <span className="text-[#6d6e71] text-[12px]">Skype: </span>
                   <a
                     href={`https://skype.com/${user.skype}`}

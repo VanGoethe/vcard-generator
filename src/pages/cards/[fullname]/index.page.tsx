@@ -122,7 +122,7 @@ export default function Card({ user }: CardProps) {
 
         <div
           ref={cardRef}
-          className={`w-[400px] h-auto rounded-sm overflow-hidden shadow-sm shadow-black/10 mx-auto flex flex-col`}
+          className={`w-[450px] h-auto rounded-sm overflow-hidden shadow-sm shadow-black/10 mx-auto flex flex-col`}
           style={{ backgroundColor: '#FFFFFF' }}
         >
           <div className="h-full gap-2 ">
@@ -139,22 +139,22 @@ export default function Card({ user }: CardProps) {
                     <img src="/immap-logo-small.png" alt={user.fullname} />
                   </div>
 
-                  <span
-                    className="text-2xl capitalize font-bold mt-4"
+                  <h3
+                    className="text-2xl capitalize font-bold mt-4 text-center"
                     style={{ color: '#193661' }}
                   >
                     {user.fullname}
-                  </span>
+                  </h3>
 
-                  <span
-                    className="text-lg capitalize font-bold mb-8"
+                  <h4
+                    className="text-lg capitalize font-bold mb-8 text-center"
                     style={{
                       // color: '#193661',
                       color: 'rgb(109 110 113)',
                     }}
                   >
                     {user.jobtitle}
-                  </span>
+                  </h4>
 
                   <Link
                     target="_blank"

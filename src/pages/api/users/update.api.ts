@@ -8,14 +8,16 @@ const updateBodySchema = z.object({
     .string()
     .transform((name) => name.toLowerCase().replace(/\//g, '')),
   jobtitle: z.string(),
-  email: z.string().email(),
+  email: z.string().refine((email) => !/@/.test(email), {
+    message: 'You dont`t need to add an prefix(@immap.org) of your email',
+  }),
   linkedin: z
     .string()
-    .regex(/^([a-z\d\-]+)$/i)
+    // .regex(/^([a-z\d\-]+)$/i)
     .transform((linkedin) => linkedin.toLowerCase().replace(/\//g, '')),
   skype: z
     .string()
-    .regex(/^([a-z\d\-]+)$/i)
+    // .regex(/^([a-z\d\-]+)$/i)
     .transform((skype) => skype.toLowerCase().replace(/\//g, '')),
   timezone: z.string(),
   phoneNumber: z.string(),
