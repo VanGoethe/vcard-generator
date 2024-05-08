@@ -48,7 +48,6 @@ const TextInputPhoneNumberInput = forwardRef<
     }: TextInputPhoneNumberProps,
     ref,
   ) => {
-
     return (
       <div
         className={clsx(
