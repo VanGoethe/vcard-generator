@@ -155,7 +155,6 @@ export function DescribeStep({ navigateTo }: DescribeStepProps) {
                 placeholder="John Doe"
                 hasError={!!errors.fullname}
                 {...register('fullname')}
-                disabled={!!isEdit}
               />
               <TextInput.MessageError message={errors.fullname?.message} />
             </TextInput.Root>

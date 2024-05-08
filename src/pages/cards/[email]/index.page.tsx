@@ -91,7 +91,7 @@ export default function Card({ user }: CardProps) {
       />
 
       <div className="bg-gradient-radial from-zinc-900/95 to-zinc-900 w-full h-screen flex flex-col gap-4 justify-center items-center">
-        <div className="flex gap-2 w-[400px]">
+        <div className="flex gap-2 w-[400px] max-w-[98%]">
           <Button
             title="Edit information"
             size="sm"
@@ -114,7 +114,7 @@ export default function Card({ user }: CardProps) {
 
         <div
           ref={cardRef}
-          className={`w-[450px] h-auto rounded-sm overflow-hidden shadow-sm shadow-black/10 mx-auto flex flex-col`}
+          className={`w-[450px] max-w-[98%] h-auto rounded-sm overflow-hidden shadow-sm shadow-black/10 mx-auto flex flex-col`}
           style={{ backgroundColor: '#FFFFFF' }}
         >
           <div className="h-full gap-2 ">
@@ -201,14 +201,16 @@ export default function Card({ user }: CardProps) {
             </div>
           </div>
         </div>
-        <Button
-          title="Download card"
-          size="sm"
-          onClick={handleDownloadCard}
-          className="max-w-[400px]"
-        >
-          <Download weight="bold" size={18} />
-        </Button>
+        <div className="flex justify-center w-[400px] max-w-[98%]">
+          <Button
+            title="Download card"
+            size="sm"
+            onClick={handleDownloadCard}
+            className="w-[400px] max-w-[98%]"
+          >
+            <Download weight="bold" size={18} />
+          </Button>
+        </div>
       </div>
     </>
   )

@@ -158,7 +158,6 @@ export function ContactsStep({ navigateTo }: ContactsStepProps) {
 
     if (hasContactsInfo) {
       const ContactsInfo = JSON.parse(hasContactsInfo)
-      console.log(ContactsInfo,'alskd')
 
       setValue('email', ContactsInfo.email)
       setValue('phoneNumber', ContactsInfo.phoneNumber)
@@ -195,6 +194,7 @@ export function ContactsStep({ navigateTo }: ContactsStepProps) {
                 placeholder="johndoe"
                 {...register('email')}
                 hasSuffix={true}
+                disabled={!!isEdit}
               >
                 <TextInput.Suffix suffix="@immap.org" />
               </TextInput.Input>

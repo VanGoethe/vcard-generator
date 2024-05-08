@@ -93,7 +93,7 @@ export default function UserPage({ user }: UserPageProps) {
 
       <div className="bg-gradient-radial from-zinc-900/95 to-zinc-900 w-full h-screen flex flex-col justify-center items-center">
         <div
-          className="max-w-[400px] h-auto w-full px-4 py-4 rounded-sm"
+          className="w-[400px] max-w-[98%] h-auto px-4 py-4 rounded-sm"
           style={{ backgroundColor: '#FFFFFF', color: '#000' }}
         >
           <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 gap-4 px-6 mt-2">
@@ -216,14 +216,16 @@ export default function UserPage({ user }: UserPageProps) {
             <div className="bg-right-red"></div>
           </div>
         </div>
-        <Button
-          title="Save contact"
-          size="sm"
-          onClick={handleDownloadVCard}
-          className="max-w-[400px] mt-4"
-        >
-          <Download weight="bold" size={18} />
-        </Button>
+        <div className="flex justify-center w-[400px] max-w-[98%]">
+          <Button
+            title="Save contact"
+            size="sm"
+            onClick={handleDownloadVCard}
+            className="w-[400px] max-w-[98%] mt-4"
+          >
+            <Download weight="bold" size={18} />
+          </Button>
+        </div>
       </div>
     </>
   )
