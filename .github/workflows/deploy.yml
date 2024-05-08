@@ -85,7 +85,7 @@ jobs:
             cd /var/www/html
             cd immap-vcard-generator            
             sudo git stash
-            echo "https://${{ secrets.GIT_USER }}:${{ secrets.GIT_TOKEN }}@github.com" > /tmp/git-credentials
+            echo "https://${{ secrets.GIT_USER }}:${{ secrets.GIT_TOKEN }}@github.com" | sudo tee /tmp/git-credentials > /dev/null
             sudo git config --global credential.helper 'store --file=/tmp/git-credentials'
             sudo chown $(whoami):$(whoami) /tmp/git-credentials
             sudo git pull
