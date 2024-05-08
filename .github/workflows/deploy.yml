@@ -89,8 +89,6 @@ jobs:
             sudo git config --global credential.helper 'store --file=/tmp/git-credentials'
             sudo chown $(whoami):$(whoami) /tmp/git-credentials
             sudo git pull
-            export NVM_DIR=~/.nvm
-            source ~/.nvm/nvm.sh 
             sudo npm install
             sudo pm2 restart ecard
             sudo pm2 status
