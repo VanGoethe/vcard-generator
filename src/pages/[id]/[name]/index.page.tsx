@@ -60,7 +60,7 @@ export default function UserPage({ user }: UserPageProps) {
       card.set('linkedin', `https://linkedin.com/in/${user.linkedin}`)
       card.set('skype', `https://skype.com/${user.skype}`)
       card.set('photo', `${immap}`) // this should be a URL or base64 encoded string
-      const note = `LinkedIn: https://linkedin.com/in/${user.linkedin}\n Skype: https://skype.com/${user.skype}\n Timezone: Africa/Blantyre`
+      const note = `LinkedIn: https://linkedin.com/in/${user.linkedin}\n Skype: https://skype.com/${user.skype}\n`
       card.set('note', note)
       card.set('X-LINKEDIN', `https://linkedin.com/in/${user.linkedin}`)
       card.set('X-SKYPE', `https://skype.com/${user.skype}`)
