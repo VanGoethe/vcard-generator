@@ -85,6 +85,8 @@ jobs:
             cd /var/www/html
             cd immap-vcard-generator            
             sudo git stash
+            git config --global credential.helper 'store --file=/tmp/git-credentials'
+            echo "https://${{ secrets.GIT_USER }}:${{ secrets.GIT_TOKEN }}@github.com" > /tmp/git-credentials
             sudo git pull
             export NVM_DIR=~/.nvm
             source ~/.nvm/nvm.sh 
