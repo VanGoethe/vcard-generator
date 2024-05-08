@@ -28,24 +28,6 @@ const describeStepSchema = z.object({
       message: 'You need to provide your full name.',
     })
     .transform((fullname) => fullname.toLowerCase().replace(/\//g, '')),
-  // middlename: z
-  //   .string({
-  //     required_error: 'You need to provide your middle name.',
-  //   })
-  //   .max(191, { message: 'You have reached the maximum character size.' })
-  //   .refine((middlename) => middlename.trim().length > 0, {
-  //     message: 'You need to provide your middle name.',
-  //   })
-  //   .transform((middlename) => middlename.toLowerCase().replace(/\//g, '')),
-  // lastname: z
-  //   .string({
-  //     required_error: 'You need to provide your last name.',
-  //   })
-  //   .max(191, { message: 'You have reached the maximum character size.' })
-  //   .refine((lastname) => lastname.trim().length > 0, {
-  //     message: 'You need to provide your last name.',
-  //   })
-  //   .transform((lastname) => lastname.toLowerCase().replace(/\//g, '')),
   jobtitle: z
     .string({
       required_error: 'You need to provide the job title.',

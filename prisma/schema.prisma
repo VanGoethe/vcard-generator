@@ -13,12 +13,11 @@ datasource db {
 
 model User {
   id                    String   @id @default(uuid())
-  fullname              String   @unique
-  email                 String
+  fullname              String   
+  email                 String   @unique
   jobtitle              String   
   linkedin              String
   skype                 String
-  timezone              String
   phoneNumber           String   @db.VarChar(277)
   image_url             String?
   card_background_color String   @db.VarChar(15)

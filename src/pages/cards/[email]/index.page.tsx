@@ -3,7 +3,7 @@ import { GetStaticPaths, GetStaticProps } from 'next'
 import html2canvas from 'html2canvas'
 import { useRouter } from 'next/router'
 import { replaceSpaceToDash } from '@/utils/replace-space-to-dash'
-import { findUserByFullname } from '@/lib/prisma/utils/find-user-by-username'
+import { findUserByEmail } from '@/lib/prisma/utils/find-user-by-email'
 import { env } from '@/env'
 
 import { NextSeo } from 'next-seo'
@@ -23,7 +23,6 @@ interface CardProps {
     jobtitle: string
     linkedin: string
     skype: string
-    timezone: string
     phoneNumber: string
     image_url: string | null
     card_background_color: string
@@ -38,7 +37,7 @@ export default function Card({ user }: CardProps) {
   const cardRef = useRef<HTMLDivElement | null>(null)
 
   async function handleNavigateToUserPage() {
-    await router.push(`/${user.id}/${replaceSpaceToDash(user.fullname)}`)
+    await router.push(`/${user.id}/${replaceSpaceToDash(user.email)}`)
   }
 
   function handleDownloadCard() {
@@ -74,7 +73,6 @@ export default function Card({ user }: CardProps) {
     const contactsInfo = JSON.stringify({
       skype: user.skype,
       phoneNumber: user.phoneNumber,
-      timezone: user.timezone,
       linkedin: user.linkedin,
       email: user.email,
     })
@@ -224,9 +222,9 @@ export const getStaticPaths: GetStaticPaths = async () => {
 }
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const fullname = String(params?.fullname)
+  const email = String(params?.email)
 
-  const foundUser = await findUserByFullname(fullname)
+  const foundUser = await findUserByEmail(email)
 
   if (!foundUser) {
     return {

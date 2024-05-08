@@ -149,7 +149,7 @@ export function CustomStep({ navigateTo }: CustomStepProps) {
         }
 
         if (error.response?.status === 409) {
-          toast('full name already registered.', {
+          toast('email already registered.', {
             type: 'error',
           })
         }

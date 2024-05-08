@@ -6,11 +6,10 @@ CREATE TABLE `users` (
     `jobtitle` VARCHAR(191) NOT NULL,
     `linkedin` VARCHAR(191) NOT NULL,
     `skype` VARCHAR(191) NOT NULL,
-    `timezone` VARCHAR(191) NOT NULL,
     `phoneNumber` VARCHAR(191) NOT NULL,
     `image_url` VARCHAR(191) NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
-    UNIQUE INDEX `users_fullname_key`(`fullname`),
+    UNIQUE INDEX `users_email_key`(`email`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

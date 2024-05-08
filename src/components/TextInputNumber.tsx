@@ -48,20 +48,6 @@ const TextInputPhoneNumberInput = forwardRef<
     }: TextInputPhoneNumberProps,
     ref,
   ) => {
-    // const [countryCode, setCountryCode] = useState('')
-    // const countryCodes = Object.values(countries).map((country) => ({
-    //   value: country.phone,
-    //   label: `${country.name} (+${country.phone})`,
-    // }))
-
-    // useEffect(() => {
-    //   fetch('https://ipapi.co/json/')
-    //     .then((response) => response.json())
-    //     .then((data) => {
-    //       setCountryCode(data.country_calling_code)
-    //       setCode(data.country_calling_code)
-    //     })
-    // }, [])
 
     return (
       <div
@@ -73,22 +59,11 @@ const TextInputPhoneNumberInput = forwardRef<
           },
         )}
       >
-        {/* <select
-          className="w-20 h-full bg-transparent focus:outline-none placeholder:text-gray-500"
-          defaultValue={countryCode}
-        >
-          {countryCodes.map((code, index) => (
-            <option key={index} value={code.value.join(',')}>
-              {code.label}
-            </option>
-          ))}
-        </select> */}
         {children}
         <input
           ref={ref}
           className="w-full h-full bg-transparent focus:outline-none placeholder:text-gray-500 "
           {...props}
-          type="number"
         />
       </div>
     )

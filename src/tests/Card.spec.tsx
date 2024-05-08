@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import Card from '@/pages/cards/[fullname]/index.page'
+import Card from '@/pages/cards/[email]/index.page'
 import { User } from '@prisma/client'
 
 vi.mock('next/router', () => require('next-router-mock'))
@@ -13,7 +13,6 @@ describe('Card page', () => {
       id: 'fake-user-id',
       fullname: 'john doe',
       skype: 'john-doe',
-      timezone: 'john-doe',
       phoneNumber: 'john-doe',
       email: 'johndoe@email.com',
       linkedin: 'john-doe',

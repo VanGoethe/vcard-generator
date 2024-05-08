@@ -9,20 +9,20 @@ export default async function handler(
     return response.status(405).end()
   }
 
-  const fullname = String(request.query.fullname)
+  const email = String(request.query.email)
 
-  if (!fullname) {
+  if (!email) {
     return response.status(400).json({ message: 'Resource not found.' })
   }
 
   const user = await prisma.user.findUnique({
     where: {
-      fullname,
+      email,
     },
   })
 
   if (user) {
-    return response.status(409).json({ message: 'User already exists.' })
+    return response.status(409).json({ message: 'email already exists.' })
   }
 
   return response.status(200).end()

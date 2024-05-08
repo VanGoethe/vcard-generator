@@ -12,12 +12,7 @@ const registerBodySchema = z.object({
     message: 'You dont`t need to add an prefix(@immap.org) of your email',
   }),
   linkedin: z.string(),
-  // .regex(/^([a-z\d\-]+)$/i)
-  // .transform((linkedin) => linkedin.toLowerCase().replace(/\//g, '')),
   skype: z.string(),
-  // .regex(/^([a-z\d\-]+)$/i)
-  // .transform((skype) => skype.toLowerCase().replace(/\//g, '')),
-  timezone: z.string(),
   phoneNumber: z.string(),
   imageUrl: z.string().nullable(),
   cardBackgroundColor: z
@@ -49,7 +44,6 @@ export default async function handler(
       jobtitle,
       linkedin,
       skype,
-      timezone,
       phoneNumber,
       imageUrl,
       cardBackgroundColor,
@@ -59,12 +53,12 @@ export default async function handler(
 
   const userExists = await prisma.user.findUnique({
     where: {
-      fullname,
+      email,
     },
   })
 
   if (userExists) {
-    return response.status(409).json({ message: 'User already exists.' })
+    return response.status(409).json({ message: 'email already exists.' })
   }
 
   const user = await prisma.user.create({
@@ -73,7 +67,6 @@ export default async function handler(
       email: `${email}`,
       linkedin,
       fullname,
-      timezone,
       phoneNumber,
       skype,
       image_url: imageUrl,

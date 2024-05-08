@@ -19,7 +19,6 @@ const updateBodySchema = z.object({
     .string()
     // .regex(/^([a-z\d\-]+)$/i)
     .transform((skype) => skype.toLowerCase().replace(/\//g, '')),
-  timezone: z.string(),
   phoneNumber: z.string(),
   imageUrl: z.string().nullable(),
   cardBackgroundColor: z
@@ -52,7 +51,6 @@ export default async function handler(
       jobtitle,
       linkedin,
       skype,
-      timezone,
       phoneNumber,
       imageUrl,
       cardBackgroundColor,
@@ -79,7 +77,6 @@ export default async function handler(
       email,
       linkedin,
       fullname,
-      timezone,
       phoneNumber,
       skype,
       image_url: imageUrl,

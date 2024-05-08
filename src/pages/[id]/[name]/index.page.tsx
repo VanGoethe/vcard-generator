@@ -62,7 +62,6 @@ export default function UserPage({ user }: UserPageProps) {
       card.set('photo', `${immap}`) // this should be a URL or base64 encoded string
       const note = `LinkedIn: https://linkedin.com/in/${user.linkedin}\n Skype: https://skype.com/${user.skype}\n Timezone: Africa/Blantyre`
       card.set('note', note)
-      card.set('tz', user.timezone)
       card.set('X-LINKEDIN', `https://linkedin.com/in/${user.linkedin}`)
       card.set('X-SKYPE', `https://skype.com/${user.skype}`)
 
@@ -148,15 +147,6 @@ export default function UserPage({ user }: UserPageProps) {
                   <span className="flex flex-col items-center underline-gray mt-1">
                     <span className={'underline-red'}></span>
                   </span>
-                </div>
-                <div className="flex items-baseline gap-2 my-[2px] text-[14px]">
-                  <span className="text-[#6d6e71] text-[12px]">Timezone: </span>
-                  <span className="flex flex-col break-all">
-                    {user.timezone}
-                  </span>
-                  {/* <span className="flex justify-center items-center bg-[#193661] p-[4px] h-[20px] rounded-sm">
-                    <Clock color="#ffffff" size={12} />
-                  </span> */}
                 </div>
                 <div className="flex items-baseline gap-2 my-[2px] text-[14px]">
                   <span className="text-[#6d6e71] text-[12px]">

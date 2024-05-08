@@ -10,11 +10,11 @@ import { TextInput } from '@/components/TextInput'
 
 import { ArrowRight } from 'phosphor-react'
 import { TextInputPhoneNumber } from '@/components/TextInputNumber'
-import { Select } from '@/components/Select'
 import { AxiosError } from 'axios'
 import { api } from '@/lib/axios'
 import { useRouter } from 'next/router'
 import { toast } from 'react-toastify'
+import { addPlusSign } from '@/utils/add-plus-sign'
 // import { CustomStepInput } from './CustomStep'
 
 const contactsStepSchema = z.object({
@@ -28,42 +28,21 @@ const contactsStepSchema = z.object({
     .refine((email) => !/@/.test(email), {
       message: 'You do not need to add "@immap.org" of your email',
     }),
-
-  // countryCode: z
-  //   .string({ required_error: 'You need to provide a country code.' })
-  //   .max(191, { message: 'You have reached the maximum character size.' }),
   phoneNumber: z
     .string({ required_error: 'You need to provide a phone number.' })
     .max(191, { message: 'You have reached the maximum character size.' }),
-  timezone: z
-    .string({
-      required_error: 'You need to provide your timezone.',
-    })
-    .refine((timezone) => timezone.trim().length > 0, {
-      message: 'You need to provide your timezone.',
-    }),
   skype: z
     .string({ required_error: 'You need to provide your skype username.' })
-    // .regex(/^([a-z\d\-]+)$/i, {
-    //   message:
-    //     "The username must contain only letters and numbers and separated by '-'.",
-    // })
     .max(191, { message: 'You have reached the maximum character size.' })
     .refine((skype) => skype.trim().length > 0, {
       message: 'You need to provide your skype username.',
     }),
-  // .transform((skype) => skype.toLowerCase().replace(/\//g, '')),
   linkedin: z
     .string({ required_error: 'You need to provide your Linkedin username.' })
-    // .regex(/^([a-z\d\-]+)$/i, {
-    //   message:
-    //     "The username must contain only letters and numbers and separated by '-'.",
-    // })
     .max(191, { message: 'You have reached the maximum character size.' })
     .refine((linkedin) => linkedin.trim().length > 0, {
       message: 'You need to provide your Linkedin username.',
     }),
-  // .transform((linkedin) => linkedin.toLowerCase().replace(/\//g, '')),
 })
 
 type ContactsStepInput = z.infer<typeof contactsStepSchema>
@@ -87,20 +66,11 @@ export function ContactsStep({ navigateTo }: ContactsStepProps) {
   const { id } = router.query
 
   async function handleSubmitContactsWithSocials(data: ContactsStepInput) {
-    const {
-      email,
-      // countryCode,
-      phoneNumber,
-      timezone,
-      skype,
-      linkedin,
-    } = data
+    const { email, phoneNumber, skype, linkedin } = data
 
     const contactsInfo = {
       email,
-      // phoneNumber: `(${countryCode})${phoneNumber}`,
-      phoneNumber,
-      timezone,
+      phoneNumber: addPlusSign(phoneNumber),
       skype,
       linkedin,
     }
@@ -128,7 +98,6 @@ export function ContactsStep({ navigateTo }: ContactsStepProps) {
       const contactsInfoParsed: {
         skype: string
         phoneNumber: string
-        timezone: string
         linkedin: string
         email: string
       } = JSON.parse(contactsInfo)
@@ -154,7 +123,7 @@ export function ContactsStep({ navigateTo }: ContactsStepProps) {
 
       sessionStorage.removeItem('@generateCard:describe')
       sessionStorage.removeItem('@generateCard:contacts')
-      await router.push(`/cards/${describeInfoParsed.fullname}`)
+      await router.push(`/cards/${contactsInfoParsed.email}`)
     } catch (error) {
       if (error instanceof AxiosError) {
         if (error.response?.status === 500) {
@@ -164,7 +133,7 @@ export function ContactsStep({ navigateTo }: ContactsStepProps) {
         }
 
         if (error.response?.status === 409) {
-          toast('full name already registered.', {
+          toast('email already registered.', {
             type: 'error',
           })
         }
@@ -189,11 +158,10 @@ export function ContactsStep({ navigateTo }: ContactsStepProps) {
 
     if (hasContactsInfo) {
       const ContactsInfo = JSON.parse(hasContactsInfo)
+      console.log(ContactsInfo,'alskd')
 
       setValue('email', ContactsInfo.email)
-      // setValue('countryCode', ContactsInfo.countryCode)
       setValue('phoneNumber', ContactsInfo.phoneNumber)
-      setValue('timezone', ContactsInfo.timezone)
       setValue('skype', ContactsInfo.skype)
       setValue('linkedin', ContactsInfo.linkedin)
     }
@@ -239,24 +207,12 @@ export function ContactsStep({ navigateTo }: ContactsStepProps) {
             <TextInput.Root>
               <TextInputPhoneNumber.Input
                 hasError={!!errors.phoneNumber}
-                placeholder="0025712345678"
+                placeholder="+25712345678"
                 {...register('phoneNumber')}
                 // setCode={(val: any) => register('countryCode', val)}
               />
               <TextInput.MessageError message={errors.phoneNumber?.message} />
             </TextInput.Root>
-          </label>
-
-          <label className="flex flex-col gap-2">
-            Timezone
-            <Select.Root>
-              <Select.Input
-                placeholder="your-user"
-                hasError={!!errors.timezone}
-                {...register('timezone')}
-              />
-              <Select.MessageError message={errors.timezone?.message} />
-            </Select.Root>
           </label>
 
           <label className="flex flex-col gap-2">
