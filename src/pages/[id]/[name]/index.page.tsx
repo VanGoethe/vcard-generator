@@ -152,9 +152,14 @@ export default function UserPage({ user }: UserPageProps) {
                   <span className="text-[#6d6e71] text-[12px]">
                     Phone number:{' '}
                   </span>
-                  <span className="flex flex-col break-all">
+                  <a
+                    href={`tel:${user.phoneNumber}`}
+                    target="_blank"
+                    className="flex flex-col break-all underline text-[#bf1f26]"
+                    rel="noreferrer"
+                  >
                     {user.phoneNumber}
-                  </span>
+                  </a>
                   {/* <span className="flex justify-center items-center bg-[#193661] p-[4px] h-[20px] rounded-sm">
                     <Phone color="#ffffff" size={12} />
                   </span> */}
