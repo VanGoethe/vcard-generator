@@ -11,8 +11,8 @@ const registerBodySchema = z.object({
   email: z.string().refine((email) => !/@/.test(email), {
     message: 'You dont`t need to add an prefix(@immap.org) of your email',
   }),
-  linkedin: z.string(),
-  skype: z.string(),
+  linkedin: z.string().optional(),
+  skype: z.string().optional(),
   phoneNumber: z.string(),
   imageUrl: z.string().nullable(),
   cardBackgroundColor: z
@@ -65,15 +65,15 @@ export default async function handler(
     data: {
       jobtitle,
       email: `${email}`,
-      linkedin,
+      linkedin: linkedin || '', // If linkedin is undefined, use an empty string
       fullname,
       phoneNumber,
-      skype,
+      skype: skype || '', // If skype is undefined, use an empty string
       image_url: imageUrl,
       card_background_color: cardBackgroundColor,
       card_text_color: cardTextColor,
     },
-  })
+})
 
   return response.status(201).json(user)
 }

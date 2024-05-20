@@ -30,17 +30,25 @@ const contactsStepSchema = z.object({
     }),
   phoneNumber: z
     .string({ required_error: 'You need to provide a phone number.' })
-    .max(191, { message: 'You have reached the maximum character size.' }),
-  skype: z
-    .string({ required_error: 'You need to provide your skype username.' })
     .max(191, { message: 'You have reached the maximum character size.' })
-    .refine((skype) => skype.trim().length > 0, {
+    .refine(
+      (phoneNumber) => (phoneNumber ? phoneNumber.trim().length > 0 : true),
+      {
+        message: 'You need to provide your phone number.',
+      },
+    ),
+  skype: z
+    .string()
+    .max(191, { message: 'You have reached the maximum character size.' })
+    .optional()
+    .refine((skype) => (skype ? skype.trim().length > 0 : true), {
       message: 'You need to provide your skype username.',
     }),
   linkedin: z
-    .string({ required_error: 'You need to provide your Linkedin username.' })
+    .string()
     .max(191, { message: 'You have reached the maximum character size.' })
-    .refine((linkedin) => linkedin.trim().length > 0, {
+    .optional()
+    .refine((linkedin) => (linkedin ? linkedin.trim().length > 0 : true), {
       message: 'You need to provide your Linkedin username.',
     }),
 })
