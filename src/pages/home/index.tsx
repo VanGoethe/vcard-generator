@@ -3,10 +3,12 @@ import { GenerateCardForm } from './components/GenerateCardFom/'
 import { useRouter } from 'next/router'
 import { toast } from 'react-toastify'
 
+let count = 1
+let haveAccessToken = false
 export default function Home() {
   const route = useRouter()
-  const [haveAccessToken, setHaveAccessToken] = useState(false)
-  let count = 1
+  const [accessToken, setAccessToken] = useState(haveAccessToken)
+
   useEffect(() => {
     const url = window.location.href // Get the current URL
     const urlParams = new URLSearchParams(url.split('#')[1]) // Split by "#" and get the part after it
@@ -20,6 +22,8 @@ export default function Home() {
       console.log(clientInfoParsed)
       // Save the client_info to the local storage
       // localStorage.setItem('client_info', JSON.stringify(clientInfoParsed))
+      haveAccessToken = true
+      setAccessToken(true)
     } else {
       console.log('No client_info found')
       route.push('/auth')
@@ -32,12 +36,11 @@ export default function Home() {
       // redirect to the login page ('/auth/microsoft')
       // window.location.href = '/auth'
     }
-    setHaveAccessToken(true)
   }, [])
 
   return (
     <div className="bg-zinc-900 w-full h-screen flex justify-center items-center">
-      {haveAccessToken ? ( // If the access token is available show the GenerateCardForm component else show loading...
+      {haveAccessToken || accessToken ? ( // If the access token is available show the GenerateCardForm component else show loading...
         <GenerateCardForm />
       ) : (
         'Loading...'
