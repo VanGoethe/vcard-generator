@@ -10,7 +10,7 @@ const msalConfig = {
     clientId: '73c69515-fadf-479e-91fa-fdc2bcebfb9e',
     authority:
       'https://login.microsoftonline.com/f6f70f1b-2a2d-4f30-852a-64b8ce0c19d7',
-    redirectUri: 'http://localhost:3001',
+    redirectUri: 'https://ecard.immap.org/',
   },
 }
 
