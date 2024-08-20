@@ -75,7 +75,7 @@ const MicrosoftLogin = (props: Props) => {
             </strong>
             <br />
             <span className="text-gray-200">
-              <span>Hello, iMMAP Team! Let’s Verify Your Account! </span>
+              <span>Hello, team! Let’s Verify Your Account! </span>
             </span>
           </div>
 

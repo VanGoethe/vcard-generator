@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import { GenerateCardForm } from './components/GenerateCardFom/'
 import { useRouter } from 'next/router'
+import { toast } from 'react-toastify'
 
 export default function Home() {
   const route = useRouter()
   const [haveAccessToken, setHaveAccessToken] = useState(false)
+  let count = 1
   useEffect(() => {
     const url = window.location.href // Get the current URL
     const urlParams = new URLSearchParams(url.split('#')[1]) // Split by "#" and get the part after it
@@ -20,9 +22,15 @@ export default function Home() {
       // localStorage.setItem('client_info', JSON.stringify(clientInfoParsed))
     } else {
       console.log('No client_info found')
+      route.push('/auth')
+      if (count === 1) {
+        toast('Account not verified! Please verify your account first.', {
+          type: 'error',
+        })
+        count++
+      }
       // redirect to the login page ('/auth/microsoft')
       // window.location.href = '/auth'
-      route.push('/auth')
     }
     setHaveAccessToken(true)
   }, [])
