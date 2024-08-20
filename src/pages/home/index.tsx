@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import { GenerateCardForm } from './components/GenerateCardFom/'
+import { useRouter } from 'next/router'
 
 export default function Home() {
+  const route = useRouter()
   const [haveAccessToken, setHaveAccessToken] = useState(false)
   useEffect(() => {
     const url = window.location.href // Get the current URL
@@ -19,7 +21,8 @@ export default function Home() {
     } else {
       console.log('No client_info found')
       // redirect to the login page ('/auth/microsoft')
-      window.location.href = '/auth'
+      // window.location.href = '/auth'
+      route.push('/auth')
     }
     setHaveAccessToken(true)
   }, [])
