@@ -14,7 +14,7 @@ export default function App({ Component, pageProps }: AppProps) {
           locale: 'pt_BR',
           url: 'https://ecard.immap.org/',
           title: 'Generate your iMMAP visit card fast and easy',
-          siteName: 'iMMAP&apos;s Visit Card Generator',
+          siteName: 'iMMAP Visit Card Generator',
           images: [
             {
               url: 'https://res.cloudinary.com/dhexs29hy/image/upload/v1679169163/open-graph_rlqt5j.png',
