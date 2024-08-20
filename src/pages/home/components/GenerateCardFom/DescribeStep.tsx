@@ -130,9 +130,10 @@ export function DescribeStep({ navigateTo }: DescribeStepProps) {
             {isEdit ? (
               <span>iMMAP&apos;s Visit Card Generator</span>
             ) : (
-              <span>Welcome to iMMAP&apos;s Visit Card Generator!</span>
+              <span>🌟 Welcome to iMMAP&apos;s Visit Card Generator!</span>
             )}
           </strong>
+          <br />
           <span className="text-gray-200">
             {isEdit ? (
               <span>Update informations on your visit card.</span>

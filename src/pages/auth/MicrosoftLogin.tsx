@@ -35,6 +35,12 @@ const MicrosoftLogin = (props: Props) => {
       .loginRedirect({
         scopes: ['User.Read'],
       })
+      .then((response: any) => {
+        console.log(response, 'response')
+        // save resopnse to local storage
+        localStorage.setItem('user', JSON.stringify(response))
+        setIsSubmitting(false)
+      })
       .catch((e: any) => {
         console.error(e, 'eeeeeeee')
         // if (location.get('error') === 'account_not_found') {
@@ -63,12 +69,13 @@ const MicrosoftLogin = (props: Props) => {
             </div>
           )}
 
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 text-center">
             <strong className="font-bold text-2xl">
-              <span>Welcome to iMMAP&apos;s Visit Card Generator!</span>
+              <span>🔒 Account Verification Required!</span>
             </strong>
+            <br />
             <span className="text-gray-200">
-              <span>We need some information to create your visit card.</span>
+              <span>Hello, iMMAP Team! Let’s Verify Your Account! </span>
             </span>
           </div>
 
