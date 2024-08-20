@@ -73,7 +73,7 @@ export default async function handler(
       card_background_color: cardBackgroundColor,
       card_text_color: cardTextColor,
     },
-})
+  })
 
   return response.status(201).json(user)
 }
