@@ -55,8 +55,8 @@ const MicrosoftLogin = (props: Props) => {
     <MsalProvider instance={msalInstance}>
       <div className="bg-zinc-900 w-full h-screen flex justify-center items-center">
         <NextSeo
-          title="Home | iMMAP Visit Card Generator"
-          description="Welcome to iMMAP's Visit Card Generator!"
+          title="Login | iMMAP Visit Card Generator"
+          description="Hello, iMMAP Team! Let’s Verify Your Account!"
         />
 
         <form className="bg-zinc-800 max-w-[546px] w-full mx-auto p-9 rounded-md flex flex-col gap-6">

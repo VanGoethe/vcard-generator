@@ -12,13 +12,13 @@ export default function App({ Component, pageProps }: AppProps) {
         openGraph={{
           type: 'website',
           locale: 'pt_BR',
-          url: 'https://visit-card-generator-pi.vercel.app/',
-          title: 'Generate your visit card fast and easy',
-          siteName: 'Visit Card Generator',
+          url: 'https://ecard.immap.org/',
+          title: 'Generate your iMMAP visit card fast and easy',
+          siteName: 'iMMAP&apos;s Visit Card Generator',
           images: [
             {
               url: 'https://res.cloudinary.com/dhexs29hy/image/upload/v1679169163/open-graph_rlqt5j.png',
-              alt: 'Initial page of Visit Card Generator',
+              alt: 'Initial page of iMMAP Visit Card Generator',
               width: 654,
               height: 761,
             },
