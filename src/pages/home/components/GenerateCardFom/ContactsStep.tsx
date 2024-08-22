@@ -15,6 +15,7 @@ import { api } from '@/lib/axios'
 import { useRouter } from 'next/router'
 import { toast } from 'react-toastify'
 import { addPlusSign } from '@/utils/add-plus-sign'
+import Link from 'next/link'
 // import { CustomStepInput } from './CustomStep'
 
 const contactsStepSchema = z.object({
@@ -72,6 +73,8 @@ export function ContactsStep({ navigateTo }: ContactsStepProps) {
   const [isEdit, setIsEdit] = useState(false)
   const router = useRouter()
   const { id } = router.query
+
+  const [profile, setProfile] = useState(null as any as string)
 
   async function handleSubmitContactsWithSocials(data: ContactsStepInput) {
     const { email, phoneNumber, skype, linkedin } = data
@@ -144,12 +147,12 @@ export function ContactsStep({ navigateTo }: ContactsStepProps) {
           toast('email already registered.', {
             type: 'error',
           })
+          setProfile(contactsInfo.email)
         }
-      }
-
-      toast('We have a problem, check your internet connection.', {
-        type: 'error',
-      })
+      } else
+        toast('We have a problem, check your internet connection.', {
+          type: 'error',
+        })
     }
   }
 
@@ -175,11 +178,21 @@ export function ContactsStep({ navigateTo }: ContactsStepProps) {
   }, [id, setValue])
 
   return (
-    <>
+    <div className=" flex flex-col gap-6">
       <NextSeo
         title="Contacts | Visit Card Generator"
         description="Define your networks so you can be found."
       />
+
+      {profile && (
+        <div className="bg-zinc-800 max-w-[546px] w-full mx-auto p-5">
+          {' '}
+          An ecard with this email already exists:{' '}
+          <Link className="text-[#cf4343] underline" href={`/cards/${profile}`}>
+            visit profile
+          </Link>
+        </div>
+      )}
 
       <form
         onSubmit={handleSubmit(handleSubmitContactsWithSocials)}
@@ -271,6 +284,6 @@ export function ContactsStep({ navigateTo }: ContactsStepProps) {
           </div>
         </div>
       </form>
-    </>
+    </div>
   )
 }
