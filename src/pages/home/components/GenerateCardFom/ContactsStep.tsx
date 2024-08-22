@@ -74,7 +74,7 @@ export function ContactsStep({ navigateTo }: ContactsStepProps) {
   const router = useRouter()
   const { id } = router.query
 
-  const [profile, setProfile] = useState(null as any as string)
+  const [profile, setProfile] = useState(null as unknown as string)
 
   async function handleSubmitContactsWithSocials(data: ContactsStepInput) {
     const { email, phoneNumber, skype, linkedin } = data
@@ -122,6 +122,7 @@ export function ContactsStep({ navigateTo }: ContactsStepProps) {
           cardBackgroundColor: '#232325',
           cardTextColor: '#ffffff',
         })
+        setProfile(null as unknown as string)
       } else {
         await api.post('/users/register', {
           ...describeInfoParsed,
@@ -130,6 +131,7 @@ export function ContactsStep({ navigateTo }: ContactsStepProps) {
           cardBackgroundColor: '#232325',
           cardTextColor: '#ffffff',
         })
+        setProfile(null as unknown as string)
       }
 
       sessionStorage.removeItem('@generateCard:describe')
