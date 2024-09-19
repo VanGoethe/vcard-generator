@@ -42,7 +42,7 @@ export default function Home() {
       }
     }
     // eslint-disable-next-line camelcase
-  }, [client_info, route])
+  }, [])
 
   return (
     <div className="bg-zinc-900 w-full h-screen flex justify-center items-center">
