@@ -80,7 +80,9 @@ export default function Card({ user }: CardProps) {
     sessionStorage.setItem('@generateCard:describe', describeInfo)
     sessionStorage.setItem('@generateCard:contacts', contactsInfo)
 
-    await router.push(`/?id=${user.id}`)
+    const clientInfo = localStorage.getItem('client_info')
+
+    await router.push(`/?id=${user.id}&client_info=${clientInfo}`)
   }
 
   return (

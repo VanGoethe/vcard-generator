@@ -8,6 +8,8 @@ let haveAccessToken = false
 export default function Home() {
   const route = useRouter()
   const [accessToken, setAccessToken] = useState(haveAccessToken)
+  // eslint-disable-next-line camelcase
+  const { client_info } = route.query
 
   useEffect(() => {
     const url = window.location.href // Get the current URL
@@ -15,13 +17,18 @@ export default function Home() {
 
     // Get the value of the "client_info" parameter
     const clientInfo = urlParams.get('client_info')
-
     // Parse the client_info value
+    // eslint-disable-next-line camelcase
     if (clientInfo) {
+      localStorage.setItem('client_info', clientInfo)
       const clientInfoParsed = JSON.parse(atob(clientInfo))
       console.log(clientInfoParsed)
       // Save the client_info to the local storage
       // localStorage.setItem('client_info', JSON.stringify(clientInfoParsed))
+      haveAccessToken = true
+      setAccessToken(true)
+      // eslint-disable-next-line camelcase
+    } else if (client_info) {
       haveAccessToken = true
       setAccessToken(true)
     } else {
@@ -33,10 +40,9 @@ export default function Home() {
         })
         count++
       }
-      // redirect to the login page ('/auth/microsoft')
-      // window.location.href = '/auth'
     }
-  }, [])
+    // eslint-disable-next-line camelcase
+  }, [client_info, route])
 
   return (
     <div className="bg-zinc-900 w-full h-screen flex justify-center items-center">
