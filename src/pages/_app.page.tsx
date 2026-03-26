@@ -1,18 +1,30 @@
 import type { AppProps } from 'next/app'
+import dynamic from 'next/dynamic'
 import { ToastContainer } from 'react-toastify'
 import { DefaultSeo } from 'next-seo'
 
+import { publicAppUrl } from '@/env'
 import '@/styles/globals.css'
 import 'react-toastify/dist/ReactToastify.css'
 
+const openGraphSiteUrl = `${publicAppUrl.replace(/\/$/, '')}/`
+
+const MsalProviderWrapper = dynamic(
+  () =>
+    import('@/components/MsalProviderWrapper').then(
+      (m) => m.MsalProviderWrapper,
+    ),
+  { ssr: false },
+)
+
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <>
+    <MsalProviderWrapper>
       <DefaultSeo
         openGraph={{
           type: 'website',
           locale: 'pt_BR',
-          url: 'https://ecard.immap.org/',
+          url: openGraphSiteUrl,
           title: 'Generate your iMMAP visit card fast and easy',
           siteName: 'iMMAP Visit Card Generator',
           images: [
@@ -27,6 +39,6 @@ export default function App({ Component, pageProps }: AppProps) {
       />
       <Component {...pageProps} />
       <ToastContainer theme="dark" />
-    </>
+    </MsalProviderWrapper>
   )
 }

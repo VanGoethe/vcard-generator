@@ -16,7 +16,12 @@ import { useRouter } from 'next/router'
 import { toast } from 'react-toastify'
 import { addPlusSign } from '@/utils/add-plus-sign'
 import Link from 'next/link'
-// import { CustomStepInput } from './CustomStep'
+
+import type { MicrosoftGraphProfile } from '@/hooks/useMicrosoftProfile'
+import {
+  graphEmailToLocalPart,
+  graphPhoneForForm,
+} from '@/hooks/useMicrosoftProfile'
 
 const contactsStepSchema = z.object({
   email: z
@@ -58,9 +63,13 @@ type ContactsStepInput = z.infer<typeof contactsStepSchema>
 
 interface ContactsStepProps {
   navigateTo: (step: 'describeStep' | 'contactsStep' | 'customStep') => void
+  microsoftProfile?: MicrosoftGraphProfile | null
 }
 
-export function ContactsStep({ navigateTo }: ContactsStepProps) {
+export function ContactsStep({
+  navigateTo,
+  microsoftProfile = null,
+}: ContactsStepProps) {
   const {
     register,
     handleSubmit,
@@ -176,8 +185,18 @@ export function ContactsStep({ navigateTo }: ContactsStepProps) {
       setValue('phoneNumber', ContactsInfo.phoneNumber)
       setValue('skype', ContactsInfo.skype)
       setValue('linkedin', ContactsInfo.linkedin)
+      return
     }
-  }, [id, setValue])
+
+    const emailLocal = graphEmailToLocalPart(microsoftProfile ?? {})
+    if (emailLocal) {
+      setValue('email', emailLocal)
+    }
+    const phone = graphPhoneForForm(microsoftProfile ?? {})
+    if (phone) {
+      setValue('phoneNumber', phone)
+    }
+  }, [id, setValue, microsoftProfile])
 
   return (
     <div className=" flex flex-col gap-6">

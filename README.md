@@ -58,7 +58,7 @@ npm install
    ```
    - Update the following variables in .env:
      - NEXT_PUBLIC_DEVELOPMENT_URL="http://localhost:3000"
-     - DATABASE_URL="mysql://root:docker@localhost:3306/visit-card-generator"
+     - DATABASE_URL="mysql://root:docker@127.0.0.1:3307/visit-card-generator" — use `127.0.0.1` (not `localhost`) for TCP; port `3307` matches `docker-compose` so Docker MySQL does not clash with a local MySQL on port 3306.
 
 4. Start the MySQL database using Docker:
 ```bash
@@ -76,6 +76,12 @@ npm run dev
 ```
 
 The application will be available at http://localhost:3000
+
+### Microsoft Entra ID (Azure AD) — MSAL login
+
+Sign-in uses MSAL in the browser. In the Azure Portal, the app registration’s **redirect URIs must use the "Single-page application" platform**, not "Web". If they are only registered as Web, login fails with **AADSTS9002326** when exchanging the authorization code for tokens.
+
+See **[docs/azure-spa-redirect.md](docs/azure-spa-redirect.md)** for step-by-step portal instructions.
 
 ## 🧪 Testing
 

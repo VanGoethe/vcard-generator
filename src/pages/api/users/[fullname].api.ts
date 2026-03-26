@@ -1,6 +1,10 @@
 import { prisma } from '@/lib/prisma'
 import { NextApiRequest, NextApiResponse } from 'next'
 
+function normalizeFullname(value: string) {
+  return value.toLowerCase().replace(/\//g, '')
+}
+
 export default async function handler(
   request: NextApiRequest,
   response: NextApiResponse,
@@ -9,20 +13,32 @@ export default async function handler(
     return response.status(405).end()
   }
 
-  const email = String(request.query.email)
+  const raw = request.query.fullname
+  const segment = Array.isArray(raw) ? raw[0] : raw
 
-  if (!email) {
+  if (!segment || typeof segment !== 'string') {
     return response.status(400).json({ message: 'Resource not found.' })
   }
 
-  const user = await prisma.user.findUnique({
+  let fullname: string
+  try {
+    fullname = normalizeFullname(decodeURIComponent(segment))
+  } catch {
+    return response.status(400).json({ message: 'Resource not found.' })
+  }
+
+  if (!fullname.trim()) {
+    return response.status(400).json({ message: 'Resource not found.' })
+  }
+
+  const user = await prisma.user.findFirst({
     where: {
-      email,
+      fullname,
     },
   })
 
   if (user) {
-    return response.status(409).json({ message: 'email already exists.' })
+    return response.status(409).json({ message: 'fullname already exists.' })
   }
 
   return response.status(200).end()

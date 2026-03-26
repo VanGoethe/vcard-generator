@@ -14,8 +14,18 @@ import { toast } from 'react-toastify'
 import { ArrowRight } from 'phosphor-react'
 import { useRouter } from 'next/router'
 
+import type { MicrosoftGraphProfile } from '@/hooks/useMicrosoftProfile'
+
+function titleCaseWords(name: string) {
+  return name
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
+}
+
 interface DescribeStepProps {
   navigateTo: (step: 'describeStep' | 'contactsStep' | 'customStep') => void
+  microsoftProfile?: MicrosoftGraphProfile | null
 }
 
 const describeStepSchema = z.object({
@@ -40,7 +50,10 @@ const describeStepSchema = z.object({
 
 type DescribeStepInput = z.infer<typeof describeStepSchema>
 
-export function DescribeStep({ navigateTo }: DescribeStepProps) {
+export function DescribeStep({
+  navigateTo,
+  microsoftProfile = null,
+}: DescribeStepProps) {
   const {
     register,
     handleSubmit,
@@ -107,8 +120,16 @@ export function DescribeStep({ navigateTo }: DescribeStepProps) {
       // setValue('middlename', DescribeInfoParsed.middlename)
       // setValue('lastname', DescribeInfoParsed.lastname)
       setValue('jobtitle', DescribeInfoParsed.jobtitle)
+      return
     }
-  }, [setValue, id])
+
+    if (microsoftProfile?.displayName) {
+      setValue('fullname', titleCaseWords(microsoftProfile.displayName))
+    }
+    if (microsoftProfile?.jobTitle) {
+      setValue('jobtitle', microsoftProfile.jobTitle)
+    }
+  }, [setValue, id, microsoftProfile])
 
   return (
     <>

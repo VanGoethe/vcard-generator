@@ -1,10 +1,18 @@
 import { useState } from 'react'
 
+import type { MicrosoftGraphProfile } from '@/hooks/useMicrosoftProfile'
+
 import { CustomStep } from './CustomStep'
 import { DescribeStep } from './DescribeStep'
 import { ContactsStep } from './ContactsStep'
 
-export function GenerateCardForm() {
+type GenerateCardFormProps = {
+  microsoftProfile?: MicrosoftGraphProfile | null
+}
+
+export function GenerateCardForm({
+  microsoftProfile = null,
+}: GenerateCardFormProps) {
   const [navigateToStep, setNavigateToStep] = useState<
     'describeStep' | 'contactsStep' | 'customStep' | undefined
   >('describeStep')
@@ -18,9 +26,15 @@ export function GenerateCardForm() {
   return (
     <>
       {navigateToStep === 'describeStep' ? (
-        <DescribeStep navigateTo={handleNavigateToStep} />
+        <DescribeStep
+          navigateTo={handleNavigateToStep}
+          microsoftProfile={microsoftProfile}
+        />
       ) : navigateToStep === 'contactsStep' ? (
-        <ContactsStep navigateTo={handleNavigateToStep} />
+        <ContactsStep
+          navigateTo={handleNavigateToStep}
+          microsoftProfile={microsoftProfile}
+        />
       ) : (
         <CustomStep navigateTo={handleNavigateToStep} />
       )}

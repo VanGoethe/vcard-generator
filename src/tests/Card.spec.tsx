@@ -1,14 +1,14 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
+import mockRouter from 'next-router-mock'
 import Card from '@/pages/cards/[email]/index.page'
 import { User } from '@prisma/client'
-
-vi.mock('next/router', () => require('next-router-mock'))
 
 describe('Card page', () => {
   let user: User
 
   beforeEach(async () => {
+    mockRouter.push('/cards/johndoe')
     user = {
       id: 'fake-user-id',
       fullname: 'john doe',

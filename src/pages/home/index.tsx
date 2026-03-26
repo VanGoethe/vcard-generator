@@ -1,56 +1,57 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { GenerateCardForm } from './components/GenerateCardFom/'
 import { useRouter } from 'next/router'
 import { toast } from 'react-toastify'
+import { useIsAuthenticated } from '@azure/msal-react'
 
-let count = 1
-let haveAccessToken = false
+import { useMicrosoftProfile } from '@/hooks/useMicrosoftProfile'
+
+let toastShownOnce = false
+
 export default function Home() {
   const route = useRouter()
-  const [accessToken, setAccessToken] = useState(haveAccessToken)
-  // eslint-disable-next-line camelcase
-  const { client_info } = route.query
+  const isAuthenticated = useIsAuthenticated()
+  const { profile: microsoftProfile } = useMicrosoftProfile(isAuthenticated)
+  const redirectedRef = useRef(false)
 
   useEffect(() => {
-    const url = window.location.href // Get the current URL
-    const urlParams = new URLSearchParams(url.split('#')[1]) // Split by "#" and get the part after it
+    if (!route.isReady) {
+      return
+    }
 
-    // Get the value of the "client_info" parameter
-    const clientInfo = urlParams.get('client_info')
-    // Parse the client_info value
-    // eslint-disable-next-line camelcase
-    if (clientInfo) {
-      localStorage.setItem('client_info', clientInfo)
-      const clientInfoParsed = JSON.parse(atob(clientInfo))
-      console.log(clientInfoParsed)
-      // Save the client_info to the local storage
-      // localStorage.setItem('client_info', JSON.stringify(clientInfoParsed))
-      haveAccessToken = true
-      setAccessToken(true)
-      // eslint-disable-next-line camelcase
-    } else if (client_info) {
-      haveAccessToken = true
-      setAccessToken(true)
-    } else {
-      console.log('No client_info found')
-      route.push('/auth')
-      if (count === 1) {
+    if (!isAuthenticated && !redirectedRef.current) {
+      redirectedRef.current = true
+      route.push('/auth').catch(() => {})
+      if (!toastShownOnce) {
         toast('Account not verified! Please verify your account first.', {
           type: 'error',
         })
-        count++
+        toastShownOnce = true
       }
     }
-    // eslint-disable-next-line camelcase
-  }, [])
+  }, [route, route.isReady, isAuthenticated])
+
+  // `isReady === false` while Next.js hydrates the router; `undefined` can occur
+  // in tests with next-router-mock — treat as ready so we do not block forever.
+  if (route.isReady === false) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-zinc-900 text-gray-200">
+        Loading...
+      </div>
+    )
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-zinc-900 text-gray-200">
+        Loading...
+      </div>
+    )
+  }
 
   return (
-    <div className="bg-zinc-900 w-full h-screen flex justify-center items-center">
-      {haveAccessToken || accessToken ? ( // If the access token is available show the GenerateCardForm component else show loading...
-        <GenerateCardForm />
-      ) : (
-        'Loading...'
-      )}
+    <div className="flex h-screen w-full items-center justify-center bg-zinc-900">
+      <GenerateCardForm microsoftProfile={microsoftProfile} />
     </div>
   )
 }
