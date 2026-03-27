@@ -17,7 +17,6 @@ model User {
   email                 String   @unique
   jobtitle              String   
   linkedin               String?  // Optional field
-  skype                 String?  // Optional field
   phoneNumber           String   @db.VarChar(277)
   image_url             String?
   card_background_color String   @db.VarChar(15)

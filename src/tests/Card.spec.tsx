@@ -1,18 +1,17 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import mockRouter from 'next-router-mock'
 import Card from '@/pages/cards/[email]/index.page'
-import { User } from '@prisma/client'
+import type { ComponentProps } from 'react'
 
 describe('Card page', () => {
-  let user: User
+  let user: ComponentProps<typeof Card>['user']
 
   beforeEach(async () => {
     mockRouter.push('/cards/johndoe')
     user = {
       id: 'fake-user-id',
       fullname: 'john doe',
-      skype: 'john-doe',
       phoneNumber: 'john-doe',
       email: 'johndoe@email.com',
       linkedin: 'john-doe',
@@ -20,13 +19,25 @@ describe('Card page', () => {
       jobtitle: 'fake description',
       card_background_color: '#000000',
       card_text_color: '#FFFFFF',
-      created_at: new Date(),
     }
   })
 
   it('Should be render correctly', () => {
     render(<Card user={user} />)
 
-    expect(screen.getByText(`${user.fullname}`)).toBeInTheDocument()
+    const visible = screen.getByTestId('visit-card-visible')
+    expect(
+      within(visible).getByText('Scan to download the details'),
+    ).toBeInTheDocument()
+    expect(within(visible).getByText(user.phoneNumber)).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: /Edit information/i }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: /Download card/i }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: /Save contact/i }),
+    ).toBeInTheDocument()
   })
 })

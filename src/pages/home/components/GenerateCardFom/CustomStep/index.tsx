@@ -12,6 +12,7 @@ import { toast } from 'react-toastify'
 import { ArrowRight } from 'phosphor-react'
 import { AxiosError } from 'axios'
 import { NextSeo } from 'next-seo'
+import { firstZodErrorMessage } from '@/lib/zod-error-message'
 
 import Logo from '../../../../../assets/immap-logo.png'
 
@@ -95,6 +96,10 @@ export function CustomStep({ navigateTo }: CustomStepProps) {
       const contactsInfo = sessionStorage.getItem('@generateCard:contacts')
 
       if (!describeInfo || !contactsInfo) {
+        toast(
+          'Your session expired or data is missing. Go back and complete the previous steps.',
+          { type: 'error' },
+        )
         return
       }
 
@@ -104,7 +109,6 @@ export function CustomStep({ navigateTo }: CustomStepProps) {
         jobtitle: string
       } = JSON.parse(describeInfo)
       const contactsInfoParsed: {
-        skype: string
         phoneNumber: string
         timezone: string
         linkedin: string
@@ -142,14 +146,24 @@ export function CustomStep({ navigateTo }: CustomStepProps) {
       await router.push(`/cards/${describeInfoParsed.fullname}`)
     } catch (error) {
       if (error instanceof AxiosError) {
-        if (error.response?.status === 500) {
+        const status = error.response?.status
+        const resData = error.response?.data
+
+        if (status === 500) {
           return toast('We had a problem proceeding, try again later!', {
             type: 'error',
           })
         }
 
-        if (error.response?.status === 409) {
-          toast('email already registered.', {
+        if (status === 400) {
+          const msg =
+            firstZodErrorMessage(resData) ??
+            'Please check your input and try again.'
+          return toast(msg, { type: 'error' })
+        }
+
+        if (status === 409) {
+          return toast('email already registered.', {
             type: 'error',
           })
         }

@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
+import { isValidPhoneNumber } from 'libphonenumber-js'
 
 const registerBodySchema = z.object({
   fullname: z
@@ -12,8 +13,9 @@ const registerBodySchema = z.object({
     message: 'You dont`t need to add an prefix(@immap.org) of your email',
   }),
   linkedin: z.string().optional(),
-  skype: z.string().optional(),
-  phoneNumber: z.string(),
+  phoneNumber: z.string().refine((v) => isValidPhoneNumber(v), {
+    message: 'Invalid phone number.',
+  }),
   imageUrl: z.string().nullable(),
   cardBackgroundColor: z
     .string()
@@ -34,7 +36,7 @@ export default async function handler(
   const registerBody = registerBodySchema.safeParse(request.body)
 
   if (registerBody.success === false) {
-    return response.status(409).json(registerBody.error.format())
+    return response.status(400).json(registerBody.error.format())
   }
 
   const {
@@ -43,7 +45,6 @@ export default async function handler(
       email,
       jobtitle,
       linkedin,
-      skype,
       phoneNumber,
       imageUrl,
       cardBackgroundColor,
@@ -68,7 +69,6 @@ export default async function handler(
       linkedin: linkedin || '', // If linkedin is undefined, use an empty string
       fullname,
       phoneNumber,
-      skype: skype || '', // If skype is undefined, use an empty string
       image_url: imageUrl,
       card_background_color: cardBackgroundColor,
       card_text_color: cardTextColor,

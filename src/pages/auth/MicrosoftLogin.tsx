@@ -1,20 +1,23 @@
 import { Button } from '@/components/Button'
 import { NextSeo } from 'next-seo'
 import React from 'react'
+import { useRouter } from 'next/router'
 
-import { useMsal, useAccount } from '@azure/msal-react'
+import { useMsal } from '@azure/msal-react'
+import { InteractionStatus } from '@azure/msal-browser'
 
-type Props = {}
-
-const MicrosoftLogin = (props: Props) => {
+const MicrosoftLogin = () => {
   const [isSubmitting, setIsSubmitting] = React.useState(false)
   const [messageError, setMessageError] = React.useState(null as string | null)
+  const router = useRouter()
 
-  //   const location = useSearchParams()
+  const { instance, accounts, inProgress } = useMsal()
 
-  const { instance, accounts } = useMsal()
-  const account = useAccount(accounts[0] || {})
-  console.log(account)
+  React.useEffect(() => {
+    if (inProgress === InteractionStatus.None && accounts.length > 0) {
+      router.push('/').catch(() => {})
+    }
+  }, [inProgress, accounts, router])
 
   const handleLogin = () => {
     setIsSubmitting(true)

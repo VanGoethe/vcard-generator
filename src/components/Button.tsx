@@ -6,7 +6,7 @@ import { CircleNotch } from 'phosphor-react'
 interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
   title: string
   children?: ReactNode
-  variant?: 'primary' | 'secondary'
+  variant?: 'primary' | 'secondary' | 'tertiary'
   size?: 'default' | 'sm'
   isLoading?: Boolean
   className?: string
@@ -33,6 +33,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           {
             'bg-red-800  hover:bg-red-700 disabled:bg-red-800 disabled:opacity-85 disabled:cursor-not-allowed':
               variant === 'primary',
+            'bg-[#193661] border-solid border-[#193661] border-1 hover:bg-[#193661]/80':
+              variant === 'tertiary',
 
             'bg-transparent border-solid border-gray-400 border-1 hover:bg-[#193661]':
               variant === 'secondary',

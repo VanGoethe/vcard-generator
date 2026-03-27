@@ -1,27 +1,31 @@
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { NextSeo } from 'next-seo'
 import { z } from 'zod'
+import PhoneInput from 'react-phone-number-input'
+import { isValidPhoneNumber } from 'libphonenumber-js'
+import clsx from 'clsx'
 
 import { Button } from '@/components/Button'
 import { MultiStep } from '@/components/MultiStep'
 import { TextInput } from '@/components/TextInput'
 
 import { ArrowRight } from 'phosphor-react'
-import { TextInputPhoneNumber } from '@/components/TextInputNumber'
 import { AxiosError } from 'axios'
 import { api } from '@/lib/axios'
 import { useRouter } from 'next/router'
 import { toast } from 'react-toastify'
-import { addPlusSign } from '@/utils/add-plus-sign'
 import Link from 'next/link'
+import { firstZodErrorMessage } from '@/lib/zod-error-message'
 
 import type { MicrosoftGraphProfile } from '@/hooks/useMicrosoftProfile'
 import {
   graphEmailToLocalPart,
   graphPhoneForForm,
 } from '@/hooks/useMicrosoftProfile'
+import { guessDefaultCountry } from '@/utils/default-phone-country'
+import { normalizePhoneToE164 } from '@/utils/phone-e164'
 
 const contactsStepSchema = z.object({
   email: z
@@ -37,26 +41,21 @@ const contactsStepSchema = z.object({
   phoneNumber: z
     .string({ required_error: 'You need to provide a phone number.' })
     .max(191, { message: 'You have reached the maximum character size.' })
-    .refine(
-      (phoneNumber) => (phoneNumber ? phoneNumber.trim().length > 0 : true),
-      {
-        message: 'You need to provide your phone number.',
-      },
-    ),
-  skype: z
-    .string()
-    .max(191, { message: 'You have reached the maximum character size.' })
-    .optional()
-    .refine((skype) => (skype ? skype.trim().length > 0 : true), {
-      message: 'You need to provide your skype username.',
+    .refine((v) => v.trim().length > 0, {
+      message: 'You need to provide your phone number.',
+    })
+    .refine((v) => isValidPhoneNumber(v), {
+      message: 'You need to provide a valid phone number.',
     }),
-  linkedin: z
-    .string()
-    .max(191, { message: 'You have reached the maximum character size.' })
-    .optional()
-    .refine((linkedin) => (linkedin ? linkedin.trim().length > 0 : true), {
-      message: 'You need to provide your Linkedin username.',
-    }),
+  linkedin: z.preprocess(
+    (val) => (val === null || val === undefined ? '' : val),
+    z
+      .string()
+      .max(191, { message: 'You have reached the maximum character size.' })
+      .refine((linkedin) => (linkedin ? linkedin.trim().length > 0 : true), {
+        message: 'You need to provide your Linkedin username.',
+      }),
+  ),
 })
 
 type ContactsStepInput = z.infer<typeof contactsStepSchema>
@@ -72,61 +71,76 @@ export function ContactsStep({
 }: ContactsStepProps) {
   const {
     register,
+    control,
     handleSubmit,
     setValue,
     formState: { errors, isSubmitting },
   } = useForm<ContactsStepInput>({
     resolver: zodResolver(contactsStepSchema),
+    defaultValues: {
+      phoneNumber: '',
+    },
   })
+
+  const defaultCountry = useMemo(() => guessDefaultCountry(), [])
 
   const [isEdit, setIsEdit] = useState(false)
   const router = useRouter()
   const { id } = router.query
+  const userId = Array.isArray(id) ? id[0] : id
 
   const [profile, setProfile] = useState(null as unknown as string)
 
   async function handleSubmitContactsWithSocials(data: ContactsStepInput) {
-    const { email, phoneNumber, skype, linkedin } = data
+    const { email, phoneNumber, linkedin } = data
 
-    const contactsInfo = {
+    const contactsPayload = {
       email,
-      phoneNumber: addPlusSign(phoneNumber),
-      skype,
-      linkedin,
+      phoneNumber: phoneNumber.trim(),
+      linkedin: linkedin ?? '',
     }
-    console.log(contactsInfo)
 
     sessionStorage.setItem(
       '@generateCard:contacts',
-      JSON.stringify(contactsInfo),
+      JSON.stringify(contactsPayload),
     )
 
-    // navigateTo('customStep')
     try {
       const describeInfo = sessionStorage.getItem('@generateCard:describe')
-      const contactsInfo = sessionStorage.getItem('@generateCard:contacts')
+      const contactsFromStorage = sessionStorage.getItem(
+        '@generateCard:contacts',
+      )
 
-      if (!describeInfo || !contactsInfo) {
+      if (!describeInfo || !contactsFromStorage) {
+        toast(
+          'Your session expired or data is missing. Open Edit from your card page again.',
+          { type: 'error' },
+        )
         return
       }
 
-      // const hasImageFile = logoImage.length > 0
       const describeInfoParsed: {
         fullname: string
         jobtitle: string
       } = JSON.parse(describeInfo)
       const contactsInfoParsed: {
-        skype: string
         phoneNumber: string
         linkedin: string
         email: string
-      } = JSON.parse(contactsInfo)
+      } = JSON.parse(contactsFromStorage)
 
       if (isEdit) {
+        if (!userId) {
+          toast('Missing user id. Open Edit from your card page again.', {
+            type: 'error',
+          })
+          return
+        }
         await api.put('/users/update', {
-          id,
+          id: userId,
           ...describeInfoParsed,
           ...contactsInfoParsed,
+          linkedin: contactsInfoParsed.linkedin ?? '',
           imageUrl: 'logo',
           cardBackgroundColor: '#232325',
           cardTextColor: '#ffffff',
@@ -136,6 +150,7 @@ export function ContactsStep({
         await api.post('/users/register', {
           ...describeInfoParsed,
           ...contactsInfoParsed,
+          linkedin: contactsInfoParsed.linkedin ?? '',
           imageUrl: 'logo',
           cardBackgroundColor: '#232325',
           cardTextColor: '#ffffff',
@@ -148,22 +163,37 @@ export function ContactsStep({
       await router.push(`/cards/${contactsInfoParsed.email}`)
     } catch (error) {
       if (error instanceof AxiosError) {
-        if (error.response?.status === 500) {
+        const status = error.response?.status
+        const resData = error.response?.data
+
+        if (status === 500) {
           return toast('We had a problem proceeding, try again later!', {
             type: 'error',
           })
         }
 
-        if (error.response?.status === 409) {
+        if (status === 400) {
+          const msg =
+            firstZodErrorMessage(resData) ??
+            'Please check your input and try again.'
+          return toast(msg, { type: 'error' })
+        }
+
+        if (status === 404 && isEdit) {
+          return toast('User not found.', { type: 'error' })
+        }
+
+        if (status === 409) {
           toast('email already registered.', {
             type: 'error',
           })
-          setProfile(contactsInfo.email)
+          setProfile(contactsPayload.email)
+          return
         }
-      } else
-        toast('We have a problem, check your internet connection.', {
-          type: 'error',
-        })
+      }
+      toast('We have a problem, check your internet connection.', {
+        type: 'error',
+      })
     }
   }
 
@@ -183,8 +213,7 @@ export function ContactsStep({
 
       setValue('email', ContactsInfo.email)
       setValue('phoneNumber', ContactsInfo.phoneNumber)
-      setValue('skype', ContactsInfo.skype)
-      setValue('linkedin', ContactsInfo.linkedin)
+      setValue('linkedin', ContactsInfo.linkedin ?? '')
       return
     }
 
@@ -194,9 +223,10 @@ export function ContactsStep({
     }
     const phone = graphPhoneForForm(microsoftProfile ?? {})
     if (phone) {
-      setValue('phoneNumber', phone)
+      const e164 = normalizePhoneToE164(phone, defaultCountry)
+      setValue('phoneNumber', e164 ?? phone)
     }
-  }, [id, setValue, microsoftProfile])
+  }, [id, setValue, microsoftProfile, defaultCountry])
 
   return (
     <div className=" flex flex-col gap-6">
@@ -246,29 +276,28 @@ export function ContactsStep({
 
           <label className="flex flex-col gap-2">
             Phone number
-            <TextInput.Root>
-              <TextInputPhoneNumber.Input
-                hasError={!!errors.phoneNumber}
-                placeholder="+25712345678"
-                {...register('phoneNumber')}
-                // setCode={(val: any) => register('countryCode', val)}
+            <div
+              className={clsx(
+                'contacts-phone-field',
+                errors.phoneNumber && 'PhoneInput--error',
+              )}
+            >
+              <Controller
+                name="phoneNumber"
+                control={control}
+                render={({ field }) => (
+                  <PhoneInput
+                    international
+                    defaultCountry={defaultCountry}
+                    value={field.value || undefined}
+                    onChange={(value) => field.onChange(value ?? '')}
+                    disabled={isSubmitting}
+                    limitMaxLength
+                  />
+                )}
               />
-              <TextInput.MessageError message={errors.phoneNumber?.message} />
-            </TextInput.Root>
-          </label>
-
-          <label className="flex flex-col gap-2">
-            Skype
-            <TextInput.Root>
-              <TextInput.Input
-                placeholder="your-user"
-                hasError={!!errors.skype}
-                {...register('skype')}
-              >
-                <TextInput.Prefix prefix="https://skype.com/" />
-              </TextInput.Input>
-              <TextInput.MessageError message={errors.skype?.message} />
-            </TextInput.Root>
+            </div>
+            <TextInput.MessageError message={errors.phoneNumber?.message} />
           </label>
 
           <label className="flex flex-col gap-2">
