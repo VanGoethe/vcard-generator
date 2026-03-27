@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "db:push": "node --env-file=.env.local node_modules/prisma/build/index.js db push",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
