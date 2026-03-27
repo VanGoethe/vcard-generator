@@ -240,9 +240,9 @@ export function MergedVisitCardLayout({
   const router = useRouter()
   const downloadStackRef = useRef<HTMLDivElement | null>(null)
 
-  async function handleNavigateToUserPage() {
-    await router.push(`/${user.id}/${replaceSpaceToDash(user.fullname)}`)
-  }
+  // async function handleNavigateToUserPage() {
+  //   await router.push(`/${user.id}/${replaceSpaceToDash(user.fullname)}`)
+  // }
 
   function handleDownloadCard() {
     if (!downloadStackRef.current) {

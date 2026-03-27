@@ -1,128 +1,113 @@
-# 🪪 iMMap Visit Card Generator
+# IMMAP e-card generator
 
-## 📝 About the Project
-This project was developed as part of [Buzzvel](https://buzzvel.com/) technical test. It creates a solution to generate business cards with QR codes that redirect to a page containing the user's contact information, making it easier for people to access and share contact details.
+## About
 
-## ⚙️ Features
-- Register personal description
-- Register personal contacts
-- Customize visit card
-- Generate visit card
-- Download visit card
-- Generate contacts page with QR code
+Web app for **iMMap** staff to create digital business cards: profile and contacts, a customizable card layout, QR codes that open a public contact page, and download options (image/PDF). Sign-in uses **Microsoft Entra ID (Azure AD)** via MSAL so organization accounts can access the tool securely.
 
-## 🛠️ Technologies & Dependencies
+This repository is a **fork** of the open-source project by Bruno Luz:
 
-### Core Technologies
-- [Next.js](https://nextjs.org/) (v13.2.4) - React framework for production
-- [React](https://reactjs.org/) (v18.2.0) - JavaScript library for building user interfaces
-- [TypeScript](https://www.typescriptlang.org/) (v4.9.5) - Typed JavaScript
-- [Node.js](https://nodejs.org/) - JavaScript runtime
-- [MySQL](https://www.mysql.com/) - Database (via Docker)
-- [Prisma](https://www.prisma.io/) (v4.11.0) - Next-generation ORM
-- [TailwindCSS](https://tailwindcss.com/) (v3.2.7) - Utility-first CSS framework
+**Original project:** [github.com/brunosllz/visit-card-generator](https://github.com/brunosllz/visit-card-generator)
 
-### Key Dependencies
-- [React Hook Form](https://react-hook-form.com/) (v7.43.5) - Form handling
-- [Zod](https://github.com/colinhacks/zod) (v3.21.4) - Schema validation
-- [React QR Code](https://www.npmjs.com/package/react-qr-code) (v2.0.11) - QR code generation
-- [html2canvas](https://html2canvas.hertzen.com/) (v1.4.1) - Screenshots
-- [jsPDF](https://github.com/parallax/jsPDF) (v2.5.1) - PDF generation
-- [Moment.js](https://momentjs.com/) (v2.30.1) - Date handling
-- [Axios](https://axios-http.com/) (v1.3.4) - HTTP client
+Thank you to the original author for the foundation this build extends.
 
-## 🚀 Getting Started
+## Features
 
-### Prerequisites
-- Node.js (LTS version recommended)
-- Docker and Docker Compose
+- Register personal description and contacts
+- Customize the visit card appearance
+- Generate the visit card and download it
+- Public contact page reachable from the QR code
+
+## Technologies
+
+Core stack: **Next.js**, **TypeScript**, **Prisma**, **MySQL** (Docker), **Tailwind CSS**. Forms use **React Hook Form** and **Zod**. QR codes, **html2canvas**, **jsPDF**, **Vitest** for tests. See `package.json` for full dependency versions.
+
+## Prerequisites
+
+- Node.js (LTS recommended)
+- Docker and Docker Compose (for MySQL)
 - Git
 
-### Installation Steps
+## Getting started
 
-1. Clone the repository:
-```bash
-git clone https://github.com/brunosllz/visit-card-generator
-cd visit-card-generator
-```
+1. **Clone this repository** (use your fork’s URL or the remote you use for this project).
 
-2. Install dependencies:
-```bash
-npm install
-```
+2. **Install dependencies**
 
-3. Set up environment variables:
-   - Copy the .env-example file to .env:
+   ```bash
+   npm install
+   ```
+
+3. **Environment variables**
+
+   Copy the example file and adjust values:
+
    ```bash
    cp .env-example .env
    ```
-   - Update the following variables in .env:
-     - NEXT_PUBLIC_DEVELOPMENT_URL="http://localhost:3000"
-     - DATABASE_URL="mysql://root:docker@127.0.0.1:3307/visit-card-generator" — use `127.0.0.1` (not `localhost`) for TCP; port `3307` matches `docker-compose` so Docker MySQL does not clash with a local MySQL on port 3306.
 
-4. Start the MySQL database using Docker:
+   Typical local settings:
+
+   - `NEXT_PUBLIC_DEVELOPMENT_URL` — e.g. `http://localhost:3000`
+   - `NEXT_PUBLIC_PRODUCTION_URL` — production base URL (e.g. `https://ecard.immap.org` in `.env-example`)
+   - `DATABASE_URL` — e.g. `mysql://root:docker@127.0.0.1:3307/visit-card-generator` (use `127.0.0.1`, not `localhost`, for TCP; port `3307` matches `docker-compose` so it does not clash with a local MySQL on `3306`)
+   - MSAL: `NEXT_PUBLIC_MSAL_CLIENT_ID`, `NEXT_PUBLIC_MSAL_TENANT_ID` — from your Azure app registration
+
+   If you use `.env.local`, Next.js overrides `.env`; keep `DATABASE_URL` consistent across both if you split config.
+
+4. **Start MySQL**
+
+   ```bash
+   docker-compose up -d
+   ```
+
+5. **Run migrations**
+
+   ```bash
+   npx prisma migrate dev
+   ```
+
+6. **Run the app**
+
+   ```bash
+   npm run dev
+   ```
+
+   Open [http://localhost:3000](http://localhost:3000).
+
+## Microsoft Entra ID (Azure AD) — MSAL login
+
+Sign-in uses MSAL in the browser. In the Azure Portal, the app registration’s **redirect URIs must be under the “Single-page application”** platform, not “Web”. Registering only as Web can cause **AADSTS9002326** when exchanging the authorization code for tokens.
+
+See **[docs/azure-spa-redirect.md](docs/azure-spa-redirect.md)** for portal steps.
+
+## Testing
+
 ```bash
-docker-compose up -d
+npm test              # run once
+npm run test:watch    # watch mode
+npm run test:coverage # coverage
+npm run test:ui       # Vitest UI
 ```
 
-5. Run database migrations:
-```bash
-npx prisma migrate dev
-```
+## Scripts
 
-6. Start the development server:
-```bash
-npm run dev
-```
+| Command           | Description              |
+| ----------------- | ------------------------ |
+| `npm run dev`     | Development server       |
+| `npm run build`   | Production build         |
+| `npm run start`   | Production server        |
+| `npm run lint`    | Lint (with fix)          |
 
-The application will be available at http://localhost:3000
+## Development tools
 
-### Microsoft Entra ID (Azure AD) — MSAL login
+ESLint, Prisma Studio (`npx prisma studio`), Vitest, Testing Library.
 
-Sign-in uses MSAL in the browser. In the Azure Portal, the app registration’s **redirect URIs must use the "Single-page application" platform**, not "Web". If they are only registered as Web, login fails with **AADSTS9002326** when exchanging the authorization code for tokens.
+## Contributing
 
-See **[docs/azure-spa-redirect.md](docs/azure-spa-redirect.md)** for step-by-step portal instructions.
+1. Fork the repository (or work from this team’s fork).
+2. Create a feature branch (`git checkout -b feature/your-feature`).
+3. Commit and push, then open a pull request.
 
-## 🧪 Testing
-
-The project uses Vitest for testing. Available test commands:
-
-```bash
-# Run tests once
-npm test
-
-# Run tests in watch mode
-npm run test:watch
-
-# Generate test coverage report
-npm run test:coverage
-
-# Open test UI
-npm run test:ui
-```
-
-## 📚 Available Scripts
-
-- `npm run dev`: Start development server
-- `npm run build`: Build for production
-- `npm run start`: Start production server
-- `npm run lint`: Lint and fix code
-
-## 🔧 Development Tools
-
-- [ESLint](https://eslint.org/) (v8.36.0) - Code linting
-- [Prisma Studio](https://www.prisma.io/studio) - Database management
-- [Vitest](https://vitest.dev/) (v0.29.3) - Testing framework
-- [Testing Library](https://testing-library.com/) - Testing utilities
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 📄 License
+## License
 
 This project is licensed under the MIT License.
