@@ -38,7 +38,7 @@ jobs:
             cd /var/www/html/vcard
             sudo rm -rf package-lock.json
             sudo git stash
-            sudo git checkout master
+            sudo git checkout main
             sudo git pull
             sudo rm -rf node_modules package-lock.json
             sudo npm install
