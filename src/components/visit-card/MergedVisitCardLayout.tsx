@@ -26,6 +26,15 @@ import immap from '../../../public/immap-logo.png'
 /** Desktop min height: enough presence without the old 780px “huge” cards. */
 const CARD_MIN_H_MD = 'md:min-h-[600px]'
 
+const HTML2CANVAS_OPTIONS: Partial<Parameters<typeof html2canvas>[1]> = {
+  scale:
+    typeof window !== 'undefined'
+      ? Math.min(2, window.devicePixelRatio || 2)
+      : 2,
+  useCORS: true,
+  backgroundColor: '#ffffff',
+}
+
 export interface MergedVisitCardUser {
   id: string
   fullname: string
@@ -48,14 +57,18 @@ interface MergedVisitCardLayoutProps {
 function QrCardPanel({
   user,
   className,
+  forPdfExport = false,
 }: {
   user: MergedVisitCardUser
   className?: string
+  /** Off-screen PDF capture: avoid clipping, use plain img for html2canvas. */
+  forPdfExport?: boolean
 }) {
   return (
     <div
       className={clsx(
-        'w-[420px] max-w-[98%] flex flex-col h-full rounded-sm overflow-hidden shadow-sm shadow-black/10 py-8 md:py-10',
+        'w-[420px] max-w-[98%] flex flex-col h-full rounded-sm shadow-sm shadow-black/10 py-8 md:py-10',
+        forPdfExport ? 'overflow-visible' : 'overflow-hidden',
         CARD_MIN_H_MD,
         className,
       )}
@@ -63,15 +76,31 @@ function QrCardPanel({
     >
       <div className="flex flex-col flex-1 min-h-0 px-10 gap-4">
         <div className="flex flex-col flex-1 min-h-0 items-center w-full">
-          <div className="relative w-[250px] h-[100px] shrink-0">
-            <Image
-              src="/immap-logo.png"
-              alt={`${user.fullname} — iMMAP logo`}
-              width={300}
-              height={300}
-              className="object-contain mt-6"
-              priority
-            />
+          <div
+            className={clsx(
+              'relative flex shrink-0 justify-center',
+              forPdfExport ? 'w-full max-w-[250px]' : 'h-[100px] w-[250px]',
+            )}
+          >
+            {forPdfExport ? (
+              // eslint-disable-next-line @next/next/no-img-element -- plain img for html2canvas; intrinsic 3256×1011 avoids stretch
+              <img
+                src="/immap-logo.png"
+                alt=""
+                width={3256}
+                height={1011}
+                className="block h-auto max-h-[100px] w-full max-w-[250px] object-contain"
+              />
+            ) : (
+              <Image
+                src="/immap-logo.png"
+                alt={`${user.fullname} — iMMAP logo`}
+                width={300}
+                height={300}
+                className="object-contain mt-6"
+                priority
+              />
+            )}
           </div>
 
           <div className="flex flex-1 min-h-0 w-full flex-col items-center justify-center mt-12">
@@ -123,14 +152,21 @@ function QrCardPanel({
 function ContactCardPanel({
   user,
   className,
+  forPdfExport = false,
+  /** When false (scan-only / public card), cap width so the single card does not feel huge. */
+  showQrCard = true,
 }: {
   user: MergedVisitCardUser
   className?: string
+  forPdfExport?: boolean
+  showQrCard?: boolean
 }) {
   return (
     <div
       className={clsx(
-        'user-card w-[420px] max-w-[98%] flex flex-col h-full px-2 md:px-8 py-8 md:py-10 rounded-sm',
+        'user-card flex w-[420px] flex-col h-full rounded-sm py-8 md:py-10',
+        showQrCard ? 'max-w-[min(900px,98%)]' : 'max-w-[min(400px,98%)]',
+        forPdfExport ? 'px-8' : 'px-2 md:px-8',
         CARD_MIN_H_MD,
         className,
       )}
@@ -138,18 +174,28 @@ function ContactCardPanel({
     >
       <div className="shrink-0 px-4">
         <div className="flex flex-col w-full gap-4 justify-center items-center mt-2">
-          {user.image_url && (
-            <Image
-              className="rounded-md w-[80px] md:w-[100px]"
-              src={'/immap-logo-small.png'}
-              alt={user.fullname}
-              width={150}
-              height={100}
-              quality={100}
-              placeholder="blur"
-              blurDataURL="https://res.cloudinary.com/dhexs29hy/image/upload/v1678970237/image_4_rv8dpo.png"
-            />
-          )}
+          {user.image_url &&
+            (forPdfExport ? (
+              // eslint-disable-next-line @next/next/no-img-element -- plain img for html2canvas PDF export
+              <img
+                src="/immap-logo-small.png"
+                alt=""
+                width={100}
+                height={67}
+                className="h-auto w-[100px] rounded-md object-contain"
+              />
+            ) : (
+              <Image
+                className="rounded-md w-[80px] md:w-[100px]"
+                src={'/immap-logo-small.png'}
+                alt={user.fullname}
+                width={150}
+                height={100}
+                quality={100}
+                placeholder="blur"
+                blurDataURL="https://res.cloudinary.com/dhexs29hy/image/upload/v1678970237/image_4_rv8dpo.png"
+              />
+            ))}
         </div>
       </div>
 
@@ -172,53 +218,115 @@ function ContactCardPanel({
         </div>
 
         <div className="flex flex-1 min-h-0 flex-col justify-center py-6">
-          <div className="flex flex-col gap-3 w-[90%] mx-auto text-left text-[#414141]">
-            <div className="cq-contact-row flex items-start gap-3 pt-8">
-              <span
-                className="mt-0.5 shrink-0 text-[#6d6e71]"
-                title="Phone number"
-              >
-                <Phone size={18} weight="fill" aria-hidden />
-              </span>
-              <a
-                href={`tel:${user.phoneNumber}`}
-                target="_blank"
-                title={user.phoneNumber}
-                className="min-w-0 flex-1 truncate hover:underline text-[#bf1f26] [font-size:inherit]"
-                rel="noreferrer"
-              >
-                {user.phoneNumber}
-              </a>
+          {forPdfExport ? (
+            <div className="w-[90%] mx-auto text-left leading-5 text-[#414141]">
+              <div className="flex items-center gap-3 pt-8 pb-5">
+                <span
+                  className="relative top-[9px] flex h-5 w-[22px] shrink-0 items-center justify-center text-[#6d6e71] [&>svg]:block [&>svg]:!h-[18px] [&>svg]:!w-[18px] [&>svg]:max-h-[18px] [&>svg]:max-w-[18px]"
+                  title="Phone number"
+                >
+                  <Phone size={18} weight="fill" aria-hidden />
+                </span>
+                <a
+                  href={`tel:${user.phoneNumber}`}
+                  target="_blank"
+                  title={user.phoneNumber}
+                  className="min-w-0 flex-1 leading-5 text-[#bf1f26] hover:underline"
+                  rel="noreferrer"
+                >
+                  {user.phoneNumber}
+                </a>
+              </div>
+              <div className="flex items-center gap-3 pb-5">
+                <span
+                  className="relative top-[9px] flex h-5 w-[22px] shrink-0 items-center justify-center text-[#6d6e71] [&>svg]:block [&>svg]:!h-[18px] [&>svg]:!w-[18px] [&>svg]:max-h-[18px] [&>svg]:max-w-[18px]"
+                  title="Email"
+                >
+                  <Envelope size={18} weight="fill" aria-hidden />
+                </span>
+                <a
+                  href={`mailto:${user.email}@immap.org`}
+                  target="_blank"
+                  title={`${user.email}@immap.org`}
+                  className="min-w-0 flex-1 leading-5 text-[#bf1f26] hover:underline"
+                  rel="noreferrer"
+                >
+                  {`${user.email}@immap.org`}
+                </a>
+              </div>
+              <div className="flex items-start gap-3">
+                <span
+                  className="relative top-[9px] flex h-[18px] w-[22px] shrink-0 items-center justify-center text-[#6d6e71] [&>svg]:block [&>svg]:!h-[18px] [&>svg]:!w-[18px] [&>svg]:max-h-[18px] [&>svg]:max-w-[18px]"
+                  title="LinkedIn"
+                >
+                  <LinkedinLogo size={18} weight="fill" aria-hidden />
+                </span>
+                <a
+                  href={`https://linkedin.com/in/${user.linkedin}`}
+                  target="_blank"
+                  title={`https://linkedin.com/in/${user.linkedin}`}
+                  className="min-w-0 flex-1 break-words leading-5 text-[#bf1f26] hover:underline"
+                  rel="noreferrer"
+                >
+                  https://linkedin.com/in/{user.linkedin}
+                </a>
+              </div>
             </div>
-            <div className="cq-contact-row flex items-start gap-3">
-              <span className="mt-0.5 shrink-0 text-[#6d6e71]" title="Email">
-                <Envelope size={18} weight="fill" aria-hidden />
-              </span>
-              <a
-                href={`mailto:${user.email}@immap.org`}
-                target="_blank"
-                title={`${user.email}@immap.org`}
-                className="min-w-0 flex-1 truncate hover:underline text-[#bf1f26] [font-size:inherit]"
-                rel="noreferrer"
-              >
-                {`${user.email}@immap.org`}
-              </a>
+          ) : (
+            <div className="flex flex-col gap-5 w-[90%] mx-auto text-left text-[#414141]">
+              <div className="cq-contact-row flex items-center gap-3 pt-8">
+                <span
+                  className="cq-contact-icon mt-0.5 shrink-0 text-[#6d6e71]"
+                  title="Phone number"
+                >
+                  <Phone size={18} weight="fill" aria-hidden />
+                </span>
+                <a
+                  href={`tel:${user.phoneNumber}`}
+                  target="_blank"
+                  title={user.phoneNumber}
+                  className="min-w-0 flex-1 hover:underline text-[#bf1f26] [font-size:inherit]"
+                  rel="noreferrer"
+                >
+                  {user.phoneNumber}
+                </a>
+              </div>
+              <div className="cq-contact-row flex items-center gap-3">
+                <span
+                  className="cq-contact-icon mt-0.5 shrink-0 text-[#6d6e71]"
+                  title="Email"
+                >
+                  <Envelope size={18} weight="fill" aria-hidden />
+                </span>
+                <a
+                  href={`mailto:${user.email}@immap.org`}
+                  target="_blank"
+                  title={`${user.email}@immap.org`}
+                  className="min-w-0 flex-1 hover:underline text-[#bf1f26] [font-size:inherit]"
+                  rel="noreferrer"
+                >
+                  {`${user.email}@immap.org`}
+                </a>
+              </div>
+              <div className="cq-contact-row flex items-center gap-3">
+                <span
+                  className="cq-contact-icon mt-0.5 shrink-0 text-[#6d6e71]"
+                  title="LinkedIn"
+                >
+                  <LinkedinLogo size={18} weight="fill" aria-hidden />
+                </span>
+                <a
+                  href={`https://linkedin.com/in/${user.linkedin}`}
+                  target="_blank"
+                  title={`https://linkedin.com/in/${user.linkedin}`}
+                  className="min-w-0 flex-1 hover:underline text-[#bf1f26] [font-size:inherit]"
+                  rel="noreferrer"
+                >
+                  https://linkedin.com/in/{user.linkedin}
+                </a>
+              </div>
             </div>
-            <div className="cq-contact-row flex items-start gap-3">
-              <span className="mt-0.5 shrink-0 text-[#6d6e71]" title="LinkedIn">
-                <LinkedinLogo size={18} weight="fill" aria-hidden />
-              </span>
-              <a
-                href={`https://linkedin.com/in/${user.linkedin}`}
-                target="_blank"
-                title={`https://linkedin.com/in/${user.linkedin}`}
-                className="min-w-0 flex-1 hover:underline text-[#bf1f26] [font-size:inherit]"
-                rel="noreferrer"
-              >
-                https://linkedin.com/in/{user.linkedin}
-              </a>
-            </div>
-          </div>
+          )}
         </div>
       </div>
 
@@ -228,13 +336,24 @@ function ContactCardPanel({
           <div className="bg-right-red"></div>
         </div>
         <div className="flex items-center justify-center mt-6">
-          <Image
-            src="/slogan.png"
-            alt="slogan"
-            width={290}
-            height={290}
-            className="object-contain w-[250px] md:w-[290px]"
-          />
+          {forPdfExport ? (
+            // eslint-disable-next-line @next/next/no-img-element -- plain img for html2canvas PDF export
+            <img
+              src="/slogan.png"
+              alt=""
+              width={290}
+              height={290}
+              className="h-auto w-[290px] max-w-full object-contain"
+            />
+          ) : (
+            <Image
+              src="/slogan.png"
+              alt="slogan"
+              width={290}
+              height={290}
+              className="object-contain w-[250px] md:w-[290px]"
+            />
+          )}
         </div>
       </div>
     </div>
@@ -247,46 +366,65 @@ export function MergedVisitCardLayout({
   showQrCard = true,
 }: MergedVisitCardLayoutProps) {
   const router = useRouter()
-  const downloadStackRef = useRef<HTMLDivElement | null>(null)
+  const qrPdfRef = useRef<HTMLDivElement | null>(null)
+  const contactPdfRef = useRef<HTMLDivElement | null>(null)
 
   // async function handleNavigateToUserPage() {
   //   await router.push(`/${user.id}/${replaceSpaceToDash(user.fullname)}`)
   // }
 
-  function handleDownloadCard() {
-    if (!downloadStackRef.current) {
-      return
-    }
-    html2canvas(downloadStackRef.current, {
-      allowTaint: true,
-      backgroundColor: '#FFFFFF',
-      removeContainer: true,
-    })
-      .then((canvas) => {
-        try {
-          canvas.style.display = 'none'
-          const imgData = canvas.toDataURL('image/png')
-          const w = canvas.width
-          const h = canvas.height
-          // eslint-disable-next-line new-cap -- jsPDF ships with this constructor name
-          const pdf = new jsPDF({
-            unit: 'px',
-            format: [w, h],
-            orientation: w > h ? 'landscape' : 'portrait',
-          })
-          pdf.addImage(imgData, 'PNG', 0, 0, w, h)
-          pdf.save(`${user.fullname}-card.pdf`)
-        } catch {
-          toast(
-            'Ocorreu um problema ao fazer o download do cartão, tente novamente mais tarde!',
-          )
+  function pageOrientation(w: number, h: number): 'portrait' | 'landscape' {
+    return w > h ? 'landscape' : 'portrait'
+  }
+
+  async function handleDownloadCard() {
+    const opts = HTML2CANVAS_OPTIONS
+    try {
+      if (showQrCard) {
+        if (!qrPdfRef.current || !contactPdfRef.current) {
+          return
         }
+        const canvasQr = await html2canvas(qrPdfRef.current, opts)
+        const canvasContact = await html2canvas(contactPdfRef.current, opts)
+        const w1 = canvasQr.width
+        const h1 = canvasQr.height
+        const w2 = canvasContact.width
+        const h2 = canvasContact.height
+        const imgQr = canvasQr.toDataURL('image/png')
+        const imgContact = canvasContact.toDataURL('image/png')
+        // eslint-disable-next-line new-cap -- jsPDF ships with this constructor name
+        const pdf = new jsPDF({
+          unit: 'px',
+          format: [w1, h1],
+          orientation: pageOrientation(w1, h1),
+        })
+        pdf.addImage(imgQr, 'PNG', 0, 0, w1, h1)
+        pdf.addPage([w2, h2], pageOrientation(w2, h2))
+        pdf.addImage(imgContact, 'PNG', 0, 0, w2, h2)
+        pdf.save(`${user.fullname}-card.pdf`)
+        return
+      }
+
+      if (!contactPdfRef.current) {
+        return
+      }
+      const canvas = await html2canvas(contactPdfRef.current, opts)
+      const w = canvas.width
+      const h = canvas.height
+      const imgData = canvas.toDataURL('image/png')
+      // eslint-disable-next-line new-cap -- jsPDF ships with this constructor name
+      const pdf = new jsPDF({
+        unit: 'px',
+        format: [w, h],
+        orientation: pageOrientation(w, h),
       })
-      .catch(() => {
-        toast(
-          'Ocorreu um problema ao fazer o download do cartão, tente novamente mais tarde!',
-        )
-      })
+      pdf.addImage(imgData, 'PNG', 0, 0, w, h)
+      pdf.save(`${user.fullname}-card.pdf`)
+    } catch {
+      toast(
+        'Ocorreu um problema ao fazer o download do cartão, tente novamente mais tarde!',
+      )
+    }
   }
 
   const handleDownloadVCard = () => {
@@ -380,7 +518,8 @@ export function MergedVisitCardLayout({
       <div
         data-testid="visit-card-visible"
         className={clsx(
-          'w-full max-w-[min(900px,98%)] px-2 mx-auto pt-16 pb-6 gap-4',
+          'w-full px-2 mx-auto pt-16 pb-6 gap-4',
+          showQrCard ? 'max-w-[min(900px,98%)]' : 'max-w-[min(400px,98%)]',
           showQrCard
             ? 'grid grid-cols-1 justify-items-center md:grid-cols-[420px_420px] md:justify-center md:justify-items-stretch'
             : 'flex flex-col items-center',
@@ -394,17 +533,23 @@ export function MergedVisitCardLayout({
         ) : null}
         <ContactCardPanel
           user={user}
+          showQrCard={showQrCard}
           className="h-full w-full max-w-[98%] md:max-w-none"
         />
       </div>
 
       <div
-        ref={downloadStackRef}
-        className="fixed left-[-10000px] top-0 z-[-1] flex flex-col items-start gap-0 pointer-events-none"
+        className="fixed left-[-10000px] top-0 z-[-1] pointer-events-none flex flex-col items-start gap-0"
         aria-hidden
       >
-        {showQrCard ? <QrCardPanel user={user} /> : null}
-        <ContactCardPanel user={user} />
+        {showQrCard ? (
+          <div ref={qrPdfRef} className="inline-block">
+            <QrCardPanel user={user} forPdfExport />
+          </div>
+        ) : null}
+        <div ref={contactPdfRef} className="inline-block">
+          <ContactCardPanel user={user} forPdfExport showQrCard={showQrCard} />
+        </div>
       </div>
 
       <div

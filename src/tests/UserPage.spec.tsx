@@ -28,9 +28,7 @@ describe('User page', () => {
     expect(
       within(visible).getByRole('heading', { name: user.fullname }),
     ).toBeInTheDocument()
-    expect(
-      within(visible).getByText('Scan to download the details'),
-    ).toBeInTheDocument()
+    expect(within(visible).getByText(user.jobtitle)).toBeInTheDocument()
     expect(
       screen.queryByRole('button', { name: /Edit information/i }),
     ).not.toBeInTheDocument()
