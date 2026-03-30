@@ -1,9 +1,0 @@
-services:
-  database:
-    image: mysql:latest
-    restart: always
-    # Host 3307 avoids clashing with a local MySQL install on macOS (often bound to 3306).
-    ports:
-      - 3307:3306
-    environment:
-      MYSQL_ROOT_PASSWORD: docker

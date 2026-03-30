@@ -23,6 +23,9 @@ import { replaceSpaceToDash } from '@/utils/replace-space-to-dash'
 
 import immap from '../../../public/immap-logo.png'
 
+/** Desktop min height: enough presence without the old 780px “huge” cards. */
+const CARD_MIN_H_MD = 'md:min-h-[600px]'
+
 export interface MergedVisitCardUser {
   id: string
   fullname: string
@@ -38,6 +41,8 @@ export interface MergedVisitCardUser {
 interface MergedVisitCardLayoutProps {
   user: MergedVisitCardUser
   showOwnerActions?: boolean
+  /** When false, only the contact-information card is shown (no QR side panel). */
+  showQrCard?: boolean
 }
 
 function QrCardPanel({
@@ -50,55 +55,55 @@ function QrCardPanel({
   return (
     <div
       className={clsx(
-        'w-[420px] max-w-[98%] h-auto rounded-sm overflow-hidden shadow-sm shadow-black/10 flex flex-col py-8',
+        'w-[420px] max-w-[98%] flex flex-col h-full rounded-sm overflow-hidden shadow-sm shadow-black/10 py-8 md:py-10',
+        CARD_MIN_H_MD,
         className,
       )}
       style={{ backgroundColor: '#FFFFFF' }}
     >
-      <div className="h-full gap-2 ">
-        <div className="px-10">
-          <div className="flex flex-col w-full h-full justify-center items-center ">
-            <div className="flex flex-col w-full h-full gap-2 justify-center items-center">
-              <div className="relative w-[250px] h-[100px]">
-                <Image
-                  src="/immap-logo.png"
-                  alt={`${user.fullname} — iMMAP logo`}
-                  width={300}
-                  height={300}
-                  className="object-contain mt-6"
-                  priority
-                />
-              </div>
-
-              <div className="flex flex-col items-center justify-center my-14">
-                <Link
-                  target="_blank"
-                  href={`${
-                    env.NODE_ENV === 'development'
-                      ? env.NEXT_PUBLIC_DEVELOPMENT_URL
-                      : env.NEXT_PUBLIC_PRODUCTION_URL
-                  }/${user.id}/${replaceSpaceToDash(user.fullname)}`}
-                  className="w-[200px] h-[200px] bg-white p-2 rounded-sm border-[#bf1f26] border-1"
-                >
-                  <QRCode
-                    value={`${
-                      env.NODE_ENV === 'development'
-                        ? env.NEXT_PUBLIC_DEVELOPMENT_URL
-                        : env.NEXT_PUBLIC_PRODUCTION_URL
-                    }/${user.id}/${replaceSpaceToDash(user.fullname)}`}
-                    className="w-full h-full"
-                  />
-                </Link>
-
-                <span
-                  className="text-2xl text-center font-semibold mt-3"
-                  style={{ color: '#be2126', fontSize: '16px' }}
-                >
-                  Scan to download the details
-                </span>
-              </div>
-            </div>
+      <div className="flex flex-col flex-1 min-h-0 px-10 gap-4">
+        <div className="flex flex-col flex-1 min-h-0 items-center w-full">
+          <div className="relative w-[250px] h-[100px] shrink-0">
+            <Image
+              src="/immap-logo.png"
+              alt={`${user.fullname} — iMMAP logo`}
+              width={300}
+              height={300}
+              className="object-contain mt-6"
+              priority
+            />
           </div>
+
+          <div className="flex flex-1 min-h-0 w-full flex-col items-center justify-center mt-12">
+            <Link
+              target="_blank"
+              href={`${
+                env.NODE_ENV === 'development'
+                  ? env.NEXT_PUBLIC_DEVELOPMENT_URL
+                  : env.NEXT_PUBLIC_PRODUCTION_URL
+              }/${user.id}/${replaceSpaceToDash(user.fullname)}`}
+              className="w-[200px] h-[200px] bg-white p-2 rounded-sm border-[#bf1f26] border-1 shrink-0"
+            >
+              <QRCode
+                value={`${
+                  env.NODE_ENV === 'development'
+                    ? env.NEXT_PUBLIC_DEVELOPMENT_URL
+                    : env.NEXT_PUBLIC_PRODUCTION_URL
+                }/${user.id}/${replaceSpaceToDash(user.fullname)}`}
+                className="w-full h-full"
+              />
+            </Link>
+
+            <span
+              className="text-2xl text-center font-semibold mt-3"
+              style={{ color: '#be2126', fontSize: '16px' }}
+            >
+              Scan to download the details
+            </span>
+          </div>
+        </div>
+
+        <div className="shrink-0 w-full">
           <hr className="my-4 border-gray-300" />
           <div className="text-center">
             <Link
@@ -125,109 +130,112 @@ function ContactCardPanel({
   return (
     <div
       className={clsx(
-        'user-card w-[415px] max-w-[98%] h-auto px-2 md:px-8 py-8 rounded-sm',
+        'user-card w-[420px] max-w-[98%] flex flex-col h-full px-2 md:px-8 py-8 md:py-10 rounded-sm',
+        CARD_MIN_H_MD,
         className,
       )}
       style={{ backgroundColor: '#FFFFFF', color: '#000' }}
     >
-      <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 gap-4 px-4">
-        <div>
-          <div className="flex flex-col w-full h-full gap-4 justify-center items-center mt-2 ">
-            {user.image_url && (
-              <Image
-                className="rounded-md w-[80px] md:w-[100px]"
-                src={'/immap-logo-small.png'}
-                alt={user.fullname}
-                width={150}
-                height={100}
-                quality={100}
-                placeholder="blur"
-                blurDataURL="https://res.cloudinary.com/dhexs29hy/image/upload/v1678970237/image_4_rv8dpo.png"
-              />
-            )}
+      <div className="shrink-0 px-4">
+        <div className="flex flex-col w-full gap-4 justify-center items-center mt-2">
+          {user.image_url && (
+            <Image
+              className="rounded-md w-[80px] md:w-[100px]"
+              src={'/immap-logo-small.png'}
+              alt={user.fullname}
+              width={150}
+              height={100}
+              quality={100}
+              placeholder="blur"
+              blurDataURL="https://res.cloudinary.com/dhexs29hy/image/upload/v1678970237/image_4_rv8dpo.png"
+            />
+          )}
+        </div>
+      </div>
+
+      <div className="flex flex-col flex-1 min-h-0 px-4 pt-12">
+        <div className="flex flex-col items-center shrink-0 text-center text-[#414141]">
+          <h3 className="cq-title capitalize font-bold text-[#be2126] mb-3">
+            {user.fullname}
+          </h3>
+          <div className="flex flex-col items-baseline mt-2">
+            <h4
+              className="cq-subtitle flex flex-col font-medium max-w-[300px] mb-3"
+              style={{ color: '#414141' }}
+            >
+              {user.jobtitle}
+            </h4>
+            <span className="flex flex-col items-center underline-gray">
+              <span className={'underline-red'}></span>
+            </span>
           </div>
         </div>
-        <div>
-          <div className="flex flex-col gap-1 w-full items-center text-center text-[#414141] mt-8">
-            <div className="flex flex-col items-center my-3">
-              <h3 className="cq-title capitalize font-bold text-[#be2126] mb-3">
-                {user.fullname}
-              </h3>
-              <div className="flex flex-col items-baseline mt-2">
-                <h4
-                  className="cq-subtitle flex flex-col font-medium max-w-[300px] mb-3"
-                  style={{ color: '#414141' }}
-                >
-                  {user.jobtitle}
-                </h4>
-                <span className="flex flex-col items-center underline-gray">
-                  <span className={'underline-red'}></span>
-                </span>
-              </div>
+
+        <div className="flex flex-1 min-h-0 flex-col justify-center py-6">
+          <div className="flex flex-col gap-3 w-[90%] mx-auto text-left text-[#414141]">
+            <div className="cq-contact-row flex items-start gap-3 pt-8">
+              <span
+                className="mt-0.5 shrink-0 text-[#6d6e71]"
+                title="Phone number"
+              >
+                <Phone size={18} weight="fill" aria-hidden />
+              </span>
+              <a
+                href={`tel:${user.phoneNumber}`}
+                target="_blank"
+                title={user.phoneNumber}
+                className="min-w-0 flex-1 truncate hover:underline text-[#bf1f26] [font-size:inherit]"
+                rel="noreferrer"
+              >
+                {user.phoneNumber}
+              </a>
             </div>
-            <div className="flex flex-col gap-3 my-8">
-              <div className="cq-contact-row flex items-start gap-3 mt-8">
-                <span
-                  className="mt-0.5 shrink-0 text-[#6d6e71]"
-                  title="Phone number"
-                >
-                  <Phone size={18} weight="fill" aria-hidden />
-                </span>
-                <a
-                  href={`tel:${user.phoneNumber}`}
-                  target="_blank"
-                  className="min-w-0 break-all hover:underline text-[#bf1f26] [font-size:inherit]"
-                  rel="noreferrer"
-                >
-                  {user.phoneNumber}
-                </a>
-              </div>
-              <div className="cq-contact-row flex items-start gap-3">
-                <span className="mt-0.5 shrink-0 text-[#6d6e71]" title="Email">
-                  <Envelope size={18} weight="fill" aria-hidden />
-                </span>
-                <a
-                  href={`mailto:${user.email}@immap.org`}
-                  target="_blank"
-                  className="min-w-0 break-all hover:underline text-[#bf1f26] [font-size:inherit]"
-                  rel="noreferrer"
-                >
-                  {`${user.email}@immap.org`}
-                </a>
-              </div>
-              <div className="cq-contact-row flex items-start gap-3">
-                <span
-                  className="mt-0.5 shrink-0 text-[#6d6e71]"
-                  title="LinkedIn"
-                >
-                  <LinkedinLogo size={18} weight="fill" aria-hidden />
-                </span>
-                <a
-                  href={`https://linkedin.com/in/${user.linkedin}`}
-                  target="_blank"
-                  className="min-w-0 break-all hover:underline text-[#bf1f26] [font-size:inherit]"
-                  rel="noreferrer"
-                >
-                  https://linkedin.com/in/{user.linkedin}
-                </a>
-              </div>
+            <div className="cq-contact-row flex items-start gap-3">
+              <span className="mt-0.5 shrink-0 text-[#6d6e71]" title="Email">
+                <Envelope size={18} weight="fill" aria-hidden />
+              </span>
+              <a
+                href={`mailto:${user.email}@immap.org`}
+                target="_blank"
+                title={`${user.email}@immap.org`}
+                className="min-w-0 flex-1 truncate hover:underline text-[#bf1f26] [font-size:inherit]"
+                rel="noreferrer"
+              >
+                {`${user.email}@immap.org`}
+              </a>
+            </div>
+            <div className="cq-contact-row flex items-start gap-3">
+              <span className="mt-0.5 shrink-0 text-[#6d6e71]" title="LinkedIn">
+                <LinkedinLogo size={18} weight="fill" aria-hidden />
+              </span>
+              <a
+                href={`https://linkedin.com/in/${user.linkedin}`}
+                target="_blank"
+                title={`https://linkedin.com/in/${user.linkedin}`}
+                className="min-w-0 flex-1 hover:underline text-[#bf1f26] [font-size:inherit]"
+                rel="noreferrer"
+              >
+                https://linkedin.com/in/{user.linkedin}
+              </a>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="relative flex items-end h-[15px] mt-8">
-        <div className="bg-left-black"></div>
-        <div className="bg-right-red"></div>
-      </div>
-      <div className="flex items-center justify-center mt-6">
-        <Image
-          src="/slogan.png"
-          alt="slogan"
-          width={290}
-          height={290}
-          className="object-contain w-[250px] md:w-[290px]"
-        />
+      <div className="shrink-0">
+        <div className="relative flex items-end h-[15px] mt-8">
+          <div className="bg-left-black"></div>
+          <div className="bg-right-red"></div>
+        </div>
+        <div className="flex items-center justify-center mt-6">
+          <Image
+            src="/slogan.png"
+            alt="slogan"
+            width={290}
+            height={290}
+            className="object-contain w-[250px] md:w-[290px]"
+          />
+        </div>
       </div>
     </div>
   )
@@ -236,6 +244,7 @@ function ContactCardPanel({
 export function MergedVisitCardLayout({
   user,
   showOwnerActions = false,
+  showQrCard = true,
 }: MergedVisitCardLayoutProps) {
   const router = useRouter()
   const downloadStackRef = useRef<HTMLDivElement | null>(null)
@@ -370,10 +379,23 @@ export function MergedVisitCardLayout({
 
       <div
         data-testid="visit-card-visible"
-        className="flex flex-col md:flex-row md:items-start gap-4 justify-center w-full max-w-[min(900px,98%)] px-2 mx-auto pt-16 pb-6"
+        className={clsx(
+          'w-full max-w-[min(900px,98%)] px-2 mx-auto pt-16 pb-6 gap-4',
+          showQrCard
+            ? 'grid grid-cols-1 justify-items-center md:grid-cols-[420px_420px] md:justify-center md:justify-items-stretch'
+            : 'flex flex-col items-center',
+        )}
       >
-        <QrCardPanel user={user} className="mx-auto md:mx-0 shrink-0" />
-        <ContactCardPanel user={user} className="mx-auto md:mx-0 shrink-0" />
+        {showQrCard ? (
+          <QrCardPanel
+            user={user}
+            className="h-full w-full max-w-[98%] md:max-w-none"
+          />
+        ) : null}
+        <ContactCardPanel
+          user={user}
+          className="h-full w-full max-w-[98%] md:max-w-none"
+        />
       </div>
 
       <div
@@ -381,11 +403,16 @@ export function MergedVisitCardLayout({
         className="fixed left-[-10000px] top-0 z-[-1] flex flex-col items-start gap-0 pointer-events-none"
         aria-hidden
       >
-        <QrCardPanel user={user} />
+        {showQrCard ? <QrCardPanel user={user} /> : null}
         <ContactCardPanel user={user} />
       </div>
 
-      <div className="w-full max-w-[min(900px,98%)]">
+      <div
+        className={clsx(
+          'w-full',
+          showQrCard ? 'max-w-[min(900px,98%)]' : 'max-w-[min(400px,98%)]',
+        )}
+      >
         <div className="flex justify-center gap-2">
           {showOwnerActions && (
             <Button

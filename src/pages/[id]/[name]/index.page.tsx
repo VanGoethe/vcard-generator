@@ -26,7 +26,7 @@ export default function UserPage({ user }: UserPageProps) {
         description={`Contact Page of ${user.fullname}`}
       />
 
-      <MergedVisitCardLayout user={user} />
+      <MergedVisitCardLayout user={user} showQrCard={false} />
     </>
   )
 }

@@ -2,7 +2,7 @@
 
 ## About
 
-Web app for **iMMap** staff to create digital business cards: profile and contacts, a customizable card layout, QR codes that open a public contact page, and download options (image/PDF). Sign-in uses **Microsoft Entra ID (Azure AD)** via MSAL so organization accounts can access the tool securely.
+Web app for **iMMap** staff to create digital business cards: profile and contacts, a customizable card layout, QR codes that open a public contact page, and download options (image/PDF). Sign-in uses **Microsoft Entra ID (Azure AD)** via MSAL so organization accounts can access the tool securely. The public card view and editor include a dedicated **404** page and updated layout and styling for a consistent experience.
 
 This repository is a **fork** of the open-source project by Bruno Luz:
 
@@ -16,16 +16,19 @@ Thank you to the original author for the foundation this build extends.
 - Customize the visit card appearance
 - Generate the visit card and download it
 - Public contact page reachable from the QR code
+- Custom **404** page for unknown routes; refreshed visit card layout and global styles
 
 ## Technologies
 
-Core stack: **Next.js**, **TypeScript**, **Prisma**, **MySQL** (Docker), **Tailwind CSS**. Forms use **React Hook Form** and **Zod**. QR codes, **html2canvas**, **jsPDF**, **Vitest** for tests. See `package.json` for full dependency versions.
+Core stack: **Next.js**, **TypeScript**, **Prisma**, **PostgreSQL**, **Tailwind CSS**. Forms use **React Hook Form** and **Zod**. QR codes, **html2canvas**, **jsPDF**, **Vitest** for tests. See `package.json` for full dependency versions.
 
 ## Prerequisites
 
 - Node.js (LTS recommended)
-- Docker and Docker Compose (for MySQL)
+- PostgreSQL (local install, or a managed/hosted instance you can reach over the network)
 - Git
+
+This project does **not** use Docker: there is no `docker-compose` in the repository, and you do not need Docker to run the app or the database.
 
 ## Getting started
 
@@ -49,22 +52,32 @@ Core stack: **Next.js**, **TypeScript**, **Prisma**, **MySQL** (Docker), **Tailw
 
    - `NEXT_PUBLIC_DEVELOPMENT_URL` — e.g. `http://localhost:3000`
    - `NEXT_PUBLIC_PRODUCTION_URL` — production base URL (e.g. `https://ecard.immap.org` in `.env-example`)
-   - `DATABASE_URL` — e.g. `mysql://root:docker@127.0.0.1:3307/visit-card-generator` (use `127.0.0.1`, not `localhost`, for TCP; port `3307` matches `docker-compose` so it does not clash with a local MySQL on `3306`)
+   - `DATABASE_URL` — Prisma connection string for your PostgreSQL database, e.g. `postgresql://USER:PASSWORD@127.0.0.1:5432/DATABASE_NAME` (prefer `127.0.0.1` over `localhost` for TCP on macOS if you hit connection quirks)
    - MSAL: `NEXT_PUBLIC_MSAL_CLIENT_ID`, `NEXT_PUBLIC_MSAL_TENANT_ID` — from your Azure app registration
 
    If you use `.env.local`, Next.js overrides `.env`; keep `DATABASE_URL` consistent across both if you split config.
 
-4. **Start MySQL**
+4. **PostgreSQL**
 
-   ```bash
-   docker-compose up -d
-   ```
+   Start your PostgreSQL server and ensure a database exists for this app (create one with `createdb`, `psql`, or your GUI). Put the same database name, user, password, host, and port into `DATABASE_URL`.
 
-5. **Run migrations**
+5. **Database and migrations**
 
-   ```bash
-   npx prisma migrate dev
-   ```
+   Prisma targets **PostgreSQL** only (see `prisma/migrations/migration_lock.toml`). The consolidated baseline migration **`20260330120000_init_postgresql`** applies the current schema (the `users` table and indexes—see `prisma/schema.prisma`).
+
+   - **Local development:** after PostgreSQL is running and `DATABASE_URL` is set:
+
+     ```bash
+     npx prisma migrate dev
+     ```
+
+   - **Production or CI:** point `DATABASE_URL` at the target database, then:
+
+     ```bash
+     npx prisma migrate deploy
+     ```
+
+   If you still have an older **MySQL** or **SQLite** database from a previous version of this fork, use a **new PostgreSQL** database for this codebase and migrate or export/import data as needed; the migration history here is PostgreSQL-only.
 
 6. **Run the app**
 
