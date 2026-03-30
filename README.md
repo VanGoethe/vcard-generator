@@ -30,62 +30,72 @@ Core stack: **Next.js**, **TypeScript**, **Prisma**, **PostgreSQL**, **Tailwind 
 
 This project does **not** use Docker: there is no `docker-compose` in the repository, and you do not need Docker to run the app or the database.
 
-## Getting started
+## Run locally
 
-1. **Clone this repository** (use your fork’s URL or the remote you use for this project).
+The dev server uses Next.js’s default port **3000**. You should end up at [http://localhost:3000](http://localhost:3000).
 
-2. **Install dependencies**
+1. **Clone and install dependencies**
 
    ```bash
+   git clone <repository-url>
+   cd visit-card-generator
    npm install
    ```
 
-3. **Environment variables**
-
-   Copy the example file and adjust values:
+2. **Configure environment**
 
    ```bash
    cp .env-example .env
    ```
 
-   Typical local settings:
+   Edit `.env` and set at least:
 
-   - `NEXT_PUBLIC_DEVELOPMENT_URL` — e.g. `http://localhost:3000`
-   - `NEXT_PUBLIC_PRODUCTION_URL` — production base URL (e.g. `https://ecard.immap.org` in `.env-example`)
-   - `DATABASE_URL` — Prisma connection string for your PostgreSQL database, e.g. `postgresql://USER:PASSWORD@127.0.0.1:5432/DATABASE_NAME` (prefer `127.0.0.1` over `localhost` for TCP on macOS if you hit connection quirks)
-   - MSAL: `NEXT_PUBLIC_MSAL_CLIENT_ID`, `NEXT_PUBLIC_MSAL_TENANT_ID` — from your Azure app registration
+   | Variable | Local development |
+   | -------- | ------------------- |
+   | `DATABASE_URL` | PostgreSQL connection string, e.g. `postgresql://USER:PASSWORD@127.0.0.1:5432/DATABASE_NAME` (on macOS, prefer `127.0.0.1` over `localhost` if you see connection issues) |
+   | `NEXT_PUBLIC_DEVELOPMENT_URL` | `http://localhost:3000` |
+   | `NEXT_PUBLIC_MSAL_CLIENT_ID` | From your Azure app registration |
+   | `NEXT_PUBLIC_MSAL_TENANT_ID` | From your Azure app registration |
 
-   If you use `.env.local`, Next.js overrides `.env`; keep `DATABASE_URL` consistent across both if you split config.
+   `NEXT_PUBLIC_PRODUCTION_URL` is mainly for production builds; you can keep the example value or set your real production URL.
 
-4. **PostgreSQL**
+   If you use `.env.local`, Next.js overrides `.env` for overlapping keys—keep `DATABASE_URL` (and MSAL IDs if split) in sync.
 
-   Start your PostgreSQL server and ensure a database exists for this app (create one with `createdb`, `psql`, or your GUI). Put the same database name, user, password, host, and port into `DATABASE_URL`.
+3. **PostgreSQL**
 
-5. **Database and migrations**
+   Start PostgreSQL and create an empty database for this app (`createdb`, `psql`, or your GUI). Put host, port, database name, user, and password into `DATABASE_URL`.
 
-   Prisma targets **PostgreSQL** only (see `prisma/migrations/migration_lock.toml`). The consolidated baseline migration **`20260330120000_init_postgresql`** applies the current schema (the `users` table and indexes—see `prisma/schema.prisma`).
+4. **Apply migrations**
 
-   - **Local development:** after PostgreSQL is running and `DATABASE_URL` is set:
+   Prisma uses **PostgreSQL** only (`prisma/migrations/migration_lock.toml`). The baseline migration **`20260330120000_init_postgresql`** creates the `users` schema (see `prisma/schema.prisma`). With `DATABASE_URL` set:
 
-     ```bash
-     npx prisma migrate dev
-     ```
+   ```bash
+   npx prisma migrate dev
+   ```
 
-   - **Production or CI:** point `DATABASE_URL` at the target database, then:
+   This applies migrations and regenerates the Prisma Client. If you ever need the client without running migrations (e.g. after pulling schema changes), use `npx prisma generate`.
 
-     ```bash
-     npx prisma migrate deploy
-     ```
-
-   If you still have an older **MySQL** or **SQLite** database from a previous version of this fork, use a **new PostgreSQL** database for this codebase and migrate or export/import data as needed; the migration history here is PostgreSQL-only.
-
-6. **Run the app**
+5. **Start the dev server**
 
    ```bash
    npm run dev
    ```
 
    Open [http://localhost:3000](http://localhost:3000).
+
+6. **Sign in from localhost**
+
+   Microsoft login only works if **Azure** lists **`http://localhost:3000`** as a redirect URI on the **Single-page application** platform (not “Web”). Configure that in the portal—see **[docs/azure-spa-redirect.md](docs/azure-spa-redirect.md)** and the section below.
+
+### Production database migrations
+
+For servers or CI, point `DATABASE_URL` at the target database and run:
+
+```bash
+npx prisma migrate deploy
+```
+
+If you still have an older **MySQL** or **SQLite** database from a previous version of this fork, use a **new PostgreSQL** database and move data manually; migration history here is PostgreSQL-only.
 
 ## Microsoft Entra ID (Azure AD) — MSAL login
 
