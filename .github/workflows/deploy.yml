@@ -22,7 +22,7 @@ jobs:
       - name: Install dependencies
         run: |
           rm -rf node_modules package-lock.json
-          npm install --include=optional --legacy-peer-deps
+          npm install
 
       - name: Build application
         run: npm run build
@@ -41,7 +41,7 @@ jobs:
             sudo git checkout master
             sudo git pull
             sudo rm -rf node_modules package-lock.json
-            sudo npm install --legacy-peer-deps
+            sudo npm install
             sudo npm run build
             sudo pm2 restart vcard
             sudo pm2 save
