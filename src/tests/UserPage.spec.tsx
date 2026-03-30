@@ -35,8 +35,8 @@ describe('User page', () => {
       screen.queryByRole('button', { name: /Edit information/i }),
     ).not.toBeInTheDocument()
     expect(
-      screen.getByRole('button', { name: /Download card/i }),
-    ).toBeInTheDocument()
+      screen.queryByRole('button', { name: /Download card/i }),
+    ).not.toBeInTheDocument()
     expect(
       screen.getByRole('button', { name: /Save contact/i }),
     ).toBeInTheDocument()

@@ -1,5 +1,6 @@
 import { useRef } from 'react'
 import html2canvas from 'html2canvas'
+import { jsPDF } from 'jspdf'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -8,7 +9,6 @@ import vCard from 'vcf'
 import clsx from 'clsx'
 import { toast } from 'react-toastify'
 import {
-  ArrowRight,
   Download,
   Envelope,
   IdentificationCard,
@@ -248,24 +248,36 @@ export function MergedVisitCardLayout({
     if (!downloadStackRef.current) {
       return
     }
-    try {
-      html2canvas(downloadStackRef.current, {
-        allowTaint: true,
-        backgroundColor: '#FFFFFF',
-        removeContainer: true,
-      }).then((canvas) => {
-        canvas.style.display = 'none'
-        const image = canvas.toDataURL('image/png')
-        const a = document.createElement('a')
-        a.setAttribute('download', `${user.fullname}-card.png`)
-        a.setAttribute('href', image)
-        a.click()
+    html2canvas(downloadStackRef.current, {
+      allowTaint: true,
+      backgroundColor: '#FFFFFF',
+      removeContainer: true,
+    })
+      .then((canvas) => {
+        try {
+          canvas.style.display = 'none'
+          const imgData = canvas.toDataURL('image/png')
+          const w = canvas.width
+          const h = canvas.height
+          // eslint-disable-next-line new-cap -- jsPDF ships with this constructor name
+          const pdf = new jsPDF({
+            unit: 'px',
+            format: [w, h],
+            orientation: w > h ? 'landscape' : 'portrait',
+          })
+          pdf.addImage(imgData, 'PNG', 0, 0, w, h)
+          pdf.save(`${user.fullname}-card.pdf`)
+        } catch {
+          toast(
+            'Ocorreu um problema ao fazer o download do cartão, tente novamente mais tarde!',
+          )
+        }
       })
-    } catch (_) {
-      toast(
-        'Ocorreu um problema ao fazer o download do cartão, tente novamente mais tarde!',
-      )
-    }
+      .catch(() => {
+        toast(
+          'Ocorreu um problema ao fazer o download do cartão, tente novamente mais tarde!',
+        )
+      })
   }
 
   const handleDownloadVCard = () => {

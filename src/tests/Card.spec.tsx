@@ -37,7 +37,7 @@ describe('Card page', () => {
       screen.getByRole('button', { name: /Download card/i }),
     ).toBeInTheDocument()
     expect(
-      screen.getByRole('button', { name: /Save contact/i }),
-    ).toBeInTheDocument()
+      screen.queryByRole('button', { name: /Save contact/i }),
+    ).not.toBeInTheDocument()
   })
 })
