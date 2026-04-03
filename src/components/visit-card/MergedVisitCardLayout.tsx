@@ -392,7 +392,7 @@ export function MergedVisitCardLayout({
         const h2 = canvasContact.height
         const imgQr = canvasQr.toDataURL('image/png')
         const imgContact = canvasContact.toDataURL('image/png')
-        // eslint-disable-next-line new-cap -- jsPDF ships with this constructor name
+         
         const pdf = new jsPDF({
           unit: 'px',
           format: [w1, h1],
@@ -412,7 +412,7 @@ export function MergedVisitCardLayout({
       const w = canvas.width
       const h = canvas.height
       const imgData = canvas.toDataURL('image/png')
-      // eslint-disable-next-line new-cap -- jsPDF ships with this constructor name
+       
       const pdf = new jsPDF({
         unit: 'px',
         format: [w, h],
@@ -429,7 +429,7 @@ export function MergedVisitCardLayout({
 
   const handleDownloadVCard = () => {
     try {
-      // eslint-disable-next-line new-cap
+       
       const card = new vCard()
       card.set(
         'fn',
