@@ -15,7 +15,7 @@ import {
   LinkedinLogo,
   PencilCircle,
   Phone,
-} from 'phosphor-react'
+} from '@phosphor-icons/react'
 
 import { Button } from '@/components/Button'
 import { env } from '@/env'

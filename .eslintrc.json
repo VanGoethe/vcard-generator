@@ -1,8 +1,5 @@
 {
-  "extends": [
-    "next/core-web-vitals", 
-    "@rocketseat/eslint-config/react"
-  ],
+  "extends": ["next/core-web-vitals"],
   "rules": {
     "no-useless-escape": "off"
   }

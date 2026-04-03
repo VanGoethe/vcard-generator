@@ -9,7 +9,7 @@ import { MultiStep } from '@/components/MultiStep'
 import { CustomPreviewCardForm } from './CustomPreviewCardForm'
 import { toast } from 'react-toastify'
 
-import { ArrowRight } from 'phosphor-react'
+import { ArrowRight } from '@phosphor-icons/react'
 import { AxiosError } from 'axios'
 import { NextSeo } from 'next-seo'
 import { firstZodErrorMessage } from '@/lib/zod-error-message'

@@ -11,7 +11,7 @@ import { MultiStep } from '@/components/MultiStep'
 import { Button } from '@/components/Button'
 import { toast } from 'react-toastify'
 
-import { ArrowRight } from 'phosphor-react'
+import { ArrowRight } from '@phosphor-icons/react'
 import { useRouter } from 'next/router'
 
 import type { MicrosoftGraphProfile } from '@/hooks/useMicrosoftProfile'

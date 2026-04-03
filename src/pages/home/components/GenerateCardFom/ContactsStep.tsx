@@ -11,7 +11,7 @@ import { Button } from '@/components/Button'
 import { MultiStep } from '@/components/MultiStep'
 import { TextInput } from '@/components/TextInput'
 
-import { ArrowRight } from 'phosphor-react'
+import { ArrowRight } from '@phosphor-icons/react'
 import { AxiosError } from 'axios'
 import { api } from '@/lib/axios'
 import { useRouter } from 'next/router'

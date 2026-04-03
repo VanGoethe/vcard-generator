@@ -1,7 +1,7 @@
 import { ComponentPropsWithoutRef, forwardRef, ReactNode } from 'react'
 import clsx from 'clsx'
 
-import { CircleNotch } from 'phosphor-react'
+import { CircleNotch } from '@phosphor-icons/react'
 
 interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
   title: string
